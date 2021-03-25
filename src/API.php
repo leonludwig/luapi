@@ -1,8 +1,8 @@
 <?php
-require 'Handler.php';
-require 'Request.php';
-require 'Response.php';
-require 'APIRoute.php';
+include __DIR__ . '/Handler.php';
+include __DIR__ . '/Request.php';
+include __DIR__ . '/Response.php';
+include __DIR__ . '/APIRoute.php';
 
 class API {
     /**

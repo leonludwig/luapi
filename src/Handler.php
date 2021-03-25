@@ -1,6 +1,6 @@
 <?php
-require 'Request.php';
-require 'Response.php';
+__DIR__ . '/Request.php';
+__DIR__ . '/Response.php';
 
 /**
  * an abstract class that you should extend to create your own API handler.
