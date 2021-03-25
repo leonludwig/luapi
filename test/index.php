@@ -1,57 +1,23 @@
 <?php
-require 'src/API.php';
-
-/*
-$route = new APIRoute("/test/{var1}/test2/{var2}/{var3}");
-$res = $route->matchURI($_SERVER["REQUEST_URI"]);
-die(var_dump($res));
-*/
+require '../vendor/autoload.php';
+use LUAPI\API;
+use LUAPI\Handler;
+use LUAPI\Request;
+use LUAPI\Response;
 
 $myAPI = new API();
-$myAPI->addHandler("/home/test",New Handler());
 
-$myAPI->handleRequest();
-
-
-$schemaJson = <<<'JSON'
-{
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "integer"
-        },
-        "name": {
-            "type": "string"
-        },
-        "orders": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/order"
-            }
-        }
-    },
-    "required":["id"],
-    "definitions": {
-        "order": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "updated": {
-                    "type": "string",
-                    "format": "date-time"
-                }
-            },
-            "required":["id"]
-        }
+class MyCustomHandler extends Handler{
+    public function handle(Request $request){
+        $resp = new Response();
+        $resp->setData(array(
+            "hello" => "world!"
+        ));
+        $resp->send();
     }
 }
-JSON;
-$schema = $req->createSchema($schemaJson);
-$res = $req->bodyMatchesSchema($schema);
-echo(var_dump($res));
+
+$myAPI->addHandler("/home/test",New MyCustomHandler());
+
+$myAPI->handleRequest();
 ?>

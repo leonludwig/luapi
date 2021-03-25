@@ -1,0 +1,20 @@
+{
+    "name": "leonludwig/luapi",
+    "description": "lightweight PHP Rest-API framework",
+    "authors": [
+        {
+            "name": "Leon Ludwig",
+            "email": "leon.ludwig@ludwig-software.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0.3",
+        "swaggest/json-schema": "^0.12.31"
+    },
+    "autoload": {
+        "psr-0": {
+            "LUAPI": "src/"
+        }
+    }
+}
