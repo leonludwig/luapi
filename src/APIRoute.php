@@ -1,9 +1,26 @@
 <?php
+/**
+ * a class that represents an API route.
+ * this class contains functions to extract the variables inside API-routes & create the regex patterns.
+ */
 class APIRoute{
-    public string $baseRoute;
-    public array $variables;
-    public string $regexPattern;
+    /**
+     * the basic route string passed in to the constructor.
+     */
+    private string $baseRoute;
+    /**
+     * an array containing the names of the URL Variables in the Route 
+     */
+    private array $variables;
+    /**
+     * the regex pattern that is used to check if a given request URL matches this route.
+     */
+    private string $regexPattern;
 
+    /**
+     * creates & initializes the route object
+     * @param string $route the api route: can contain variables noted like {varName}. Example: /api/user/{id}
+     */
     public function __construct(string $route)
     {
         $this->baseRoute = $this->removeTrailingSlash($route);

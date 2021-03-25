@@ -1,4 +1,7 @@
 <?php
+/**
+ * a basic response class containing everything you need to send a simple json-Response. You can extend it to customize it.
+ */
 class Response{
     const HTTP_CONTINUE = 100;
     const HTTP_SWITCHING_PROTOCOLS = 101;
@@ -64,6 +67,9 @@ class Response{
     const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
     const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+    /**
+     * an associative array containing the response data. will be serialized to json when sending the response.
+     */
     private array $data;
 
     public function __construct(){
@@ -122,6 +128,9 @@ class Response{
     }
 }
 
+/**
+ * an easy class that extends the response. Youi can use it if you just want to send a fast response without much customization.
+ */
 class SimpleResponse extends Response{
     /**
      * sets the response data and sends it together with the status code

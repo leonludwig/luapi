@@ -2,6 +2,10 @@
 require 'vendor/autoload.php';
 use Swaggest\JsonSchema\Schema;
 
+/**
+ * this class represents a request from a client. It provides simple interfaces to access request parameters.
+ * For best practice you should use the bodyMatchesSchema-function to check if the client input matches your expectation.
+ */
 class Request {
     /**
      * WARNING: LUAPI is built for APIs that use JSON bodies! Try to change your client to send the request with all parameters in a json body.
