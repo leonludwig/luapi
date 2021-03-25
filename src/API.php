@@ -5,7 +5,13 @@ require 'Response.php';
 require 'APIRoute.php';
 
 class API {
+    /**
+     * an array containing arrays of [route,handler]
+     */
     private array $handlers = array();
+    /**
+     * the default handler used when no handler was found for a request uri
+     */
     private ?Handler $defaultHandler = null;
 
     public function __construct()
