@@ -1,4 +1,8 @@
 <?php
+namespace LUAPI\Database\Interfaces;
+
+use LUAPI\Database\Connectors\PDOConnector;
+
 /**
  * an abstract class to create an interface to a database
  */

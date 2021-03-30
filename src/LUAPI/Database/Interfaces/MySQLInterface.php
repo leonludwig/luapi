@@ -1,5 +1,7 @@
 <?php
-include __DIR__ . '/SQLConnector.php';
+namespace LUAPI\Database\Interfaces;
+
+use LUAPI\Database\Interfaces\SQLInterface;
 /**
  * a class that represents an interface to a database connection.
  */
