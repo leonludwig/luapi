@@ -1,36 +1,72 @@
 <?php
 namespace LUAPI\Validation;
 
+use Swaggest\JsonSchema\Schema;
+
+/**
+ * a class that can be used to easily create a JSON Schema for request validation
+ */
 class JSONSchemaBuilder {
 
-    private array $data = array();
+    /**
+     * an array containing the schema data
+     */
+    private array $data;
 
     public function  __construct()
     {
-        
+        $this->data = array(
+            "type" => "object",
+            "properties" => array(),
+            "required" => array()
+        );
     }
 
+    /**
+     * adds a property expectation to the schema
+     * @param string $level the level that the property should be contained in. multiple levels should be separated by ".". Example: company.address
+     * @param SchemaItem $item the property item. should be of a class extending SchemaItem. e.g. SchemaString / SchemaNumber
+     */
     public function expect(string $level, SchemaItem $item)
     {
         $levels = preg_split('/[.]/', $level);
         
-        $cLvlObject = $this->data;
-        $cLvlIndex = 0;
-        while($cLvlIndex < sizeof($levels)){
-            if(array_key_exists("properties",$cLvlObject) == false){
-                $cLvlObject = array(
+        $cLvlObject = &$this->data["properties"];
+        $required = &$this->data["required"];
+        foreach($levels as $levelName){
+            if(array_key_exists($levelName,$cLvlObject) == false){
+                $cLvlObject[$levelName] = array(
                     "type" => "object",
-                    "properties" => array()
+                    "properties" => array(),
+                    "required" => array()
                 );
             }
-            $cLvlIndex++;
-        }
+            
+            if(is_array($required) && in_array($levelName,$required) == false){
+                array_push($required,$levelName);
+            }
 
-        array_push($cLvlObject["properties"],$item->toAssociativeArray());
+            $required = &$cLvlObject[$levelName]["required"];
+            $cLvlObject = &$cLvlObject[$levelName]["properties"];
+        }
+        $cLvlObject[$item->fieldName] = $item->toAssociativeArray();
+        array_push($required,$item->fieldName);
     }
 
+    /**
+     * returns a JSON-Schema compatible JSON for the added properties.
+     * @return string the JSON schema
+     */
     public function toJSON():string{
         return json_encode($this->data);
+    }
+
+    /**
+     * creates a schema object from the Schema data. (check http://json-schema.org/ for more information)
+     * @return Schema the Swaggest\JsonSchema\Schema object
+     */
+    public function toSchema():Schema{
+        return Schema::import(json_decode($this->toJSON()));
     }
 }
 
@@ -38,7 +74,7 @@ abstract class SchemaItem{
     /**
      * the name of the schema item/property
      */
-    protected string $fieldName;
+    public string $fieldName;
     /**
      * the properties of the schema item
      */
@@ -98,7 +134,7 @@ class SchemaString extends SchemaItem{
                 $ret[$key] = $value;
             }
         }
-        return array($this->fieldName => $ret);
+        return $ret;
     }
 }
 

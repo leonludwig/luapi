@@ -18,8 +18,8 @@ class MyCustomHandler extends Handler{
         $schema->expect("company.address",new SchemaNumber("houseNr",true));
         $schema->expect("responsible",new SchemaString("firstName",2,50));
         $schema->expect("responsible",new SchemaString("lastName",2,50));
-        echo($schema->toJSON());
 
+        $isMatch = $request->bodyMatchesSchema($schema->toSchema());
 
         $resp = new Response();
         $resp->setData(array(
