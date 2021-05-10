@@ -12,7 +12,7 @@ class Request {
      * WARNING: LUAPI is built for APIs that use JSON bodies! Try to change your client to send the request with all parameters in a json body.
      * an associative array containing the url parameters. similar to $_GET.
      */
-    public array $urlParameters;
+    public array $queryParameters;
     /**
      * an associative array containing the url variables. defined in the API Route.
      */
@@ -33,7 +33,7 @@ class Request {
      */
     public function __construct(array $urlVars)
     {
-        $this->urlParameters = $_GET;
+        $this->queryParameters = $_GET;
         $this->urlVariables = $urlVars;
         $this->formParameters = $_POST;
         $this->bodyParameters = $this->getBodyParameters();
