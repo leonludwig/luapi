@@ -57,7 +57,7 @@ class Request {
     /**
      * @return string the raw request body. empty string on error.
      */
-    private function getRawBody():string{
+    public function getRawBody():string{
         try {
             $body = file_get_contents('php://input');
         } catch (\Throwable $th) {
@@ -99,6 +99,31 @@ class Request {
      */
     public function param(string $key):mixed{
         return $this->getParameter($key);
+    }
+
+    /**
+     * returns the value of the given header.
+     * @param string $key the header name. The key is automatically turned to upper case and - is replaced with _. if the key doesnt start with HTTP_, the method will add this prefix to the key.
+     * @return mixed the header value
+     */
+    public function getHeader(string $key):mixed{
+        $key = strtoupper($key);
+        $key = str_replace("-","_",$key);
+        if(str_starts_with($key,"HTTP_") == false){
+            $key = "HTTP_" . $key;
+        }
+
+        return $_SERVER[$key];
+    }
+
+    /**
+     * returns the value of the given cookie.
+     * @param string $key the cookie name. " " and "." are automatically replaced with _.
+     * @return mixed the cookie value 
+     */
+    public function getCookie(string $key):mixed{
+        $key = str_replace(array(" ","."),"_",$key);
+        return $_COOKIE[$key];
     }
 
     /**
