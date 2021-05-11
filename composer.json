@@ -10,7 +10,9 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=8.0.3",
-        "swaggest/json-schema": "^0.12.31"
+        "swaggest/json-schema": "^0.12.31",
+        "cebe/php-openapi": "1.5.x-dev",
+        "league/openapi-psr7-validator": "dev-master"
     },
     "autoload": {
         "psr-0": {
