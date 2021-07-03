@@ -47,5 +47,9 @@ try{
     exit();
 }
 
-print("Done!");
+/**
+ * 1. re-include php-cs-fixer
+ * 2. fix all files in targetdir
+ * 3. custom-fix switch(case)
+ */
 ?>
