@@ -47,6 +47,15 @@ try{
     exit();
 }
 
+try{
+    exec("vendor/bin/php-cs-fixer fix test/generator/handlers/ --config src/LUAPI/OAS3/csfixer-config.php");
+} catch(Throwable $th){
+    print("failed to run cs-fixer.\r\n");
+    print("Error MSG:" . $th->getMessage() . "\r\n");
+    print("Line:" . $th->getLine() . "\r\n");
+    exit();
+}
+
 /**
  * 1. re-include php-cs-fixer
  * 2. fix all files in targetdir
