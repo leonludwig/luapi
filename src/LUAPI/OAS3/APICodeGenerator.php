@@ -30,9 +30,9 @@ class APICodeGenerator {
         }
     }
 
-    public function buildAPI(string $targetDirectory){
-        if($this->isDirectoryEmpty($targetDirectory) == false){
-            throw new Exception("Cannot build. Directory is not empty!");
+    public function buildAPI(string $targetDirectory, string $relativeVendorPath){
+        if($this->directoryAlreadyHasHandlersSubDir($targetDirectory)){
+            throw new Exception("Cannot build. Handlers dir already existing!");
             return;
         }
 
@@ -42,7 +42,7 @@ class APICodeGenerator {
         }
 
         //build the API Modules
-        $this->generateAPIModules();
+        $this->generateAPIModules($relativeVendorPath);
 
         foreach($this->handlers as $handler){
             $fileName = $handler->handlerName . '.php';
@@ -60,16 +60,42 @@ class APICodeGenerator {
         }
     }
 
-    private function isDirectoryEmpty(string $dir):bool{
+    public function updateAPI(string $targetDirectory, string $relativeVendorPath){
+        if($this->directoryAlreadyHasHandlersSubDir($targetDirectory) == false){
+            throw new Exception("Cannot update. Handlers dir not found!");
+            return;
+        }
+
+        //build the API Modules
+        $this->generateAPIModules($relativeVendorPath);
+
+        foreach($this->handlers as $handler){
+            $fileName = $handler->handlerName . '.php';
+            $handlerPath = $targetDirectory . '/handlers/' . $this->removeParametersFromPath($handler->path);
+
+            try{
+                $existingDocument = file_get_contents($handlerPath . '/' . $fileName);
+                $fileHandle = fopen($handlerPath . '/' . $fileName,"w");
+                fwrite($fileHandle,$handler->updateHandlerDocument($existingDocument));
+                fclose($fileHandle);
+            } catch(Throwable $th){
+                print($th->__toString());
+                throw new Exception("Failed to create handler document for '$fileName'!",0,$th);
+                return;
+            }
+        }
+    }
+
+    private function directoryAlreadyHasHandlersSubDir(string $dir){
         $handle = opendir($dir);
         while (false !== ($entry = readdir($handle))) {
-          if ($entry != "." && $entry != ".." && str_ends_with($entry,".json") == false && str_ends_with($entry,".yaml") == false) {
-            closedir($handle);
-            return FALSE;
-          }
+            if ($entry == "handlers") {
+                closedir($handle);
+                return true;
+            }
         }
         closedir($handle);
-        return TRUE;
+        return false;
     }
 
     private function removeParametersFromPath(string $path){
@@ -81,9 +107,9 @@ class APICodeGenerator {
         return $path;
     }
 
-    public function generateAPIModules(){
+    public function generateAPIModules(string $relativeVendorPath){
         foreach($this->apiDefinition->paths as $path => $definition){
-            $this->handlers[$path] = new APIHandlerCodeData($path,$definition);
+            $this->handlers[$path] = new APIHandlerCodeData($path,$definition,$relativeVendorPath);
         }
     }
 }
@@ -91,6 +117,7 @@ class APICodeGenerator {
 class APIHandlerCodeData{
     public string $path;
     public PathItem $pathDefinition;
+    public string $relativeVendorPath;
 
     public string $handlerBaseCode;
     public string $handlerName;
@@ -99,10 +126,11 @@ class APIHandlerCodeData{
     public array $requestHandlingFunctions = array();
     public array $requestValidatorClasses = array();
 
-    public function __construct(string $path, PathItem $pathDefinition)
+    public function __construct(string $path, PathItem $pathDefinition, string $relativeVendorPath)
     {
         $this->path = $path;
         $this->pathDefinition = $pathDefinition;
+        $this->relativeVendorPath = $relativeVendorPath;
         $this->handlerBaseCode = file_get_contents(__DIR__ . '/BaseDocuments/handler.php');
         $this->buildHandler();
     }
@@ -223,8 +251,77 @@ class APIHandlerCodeData{
         $code = str_replace("__SWITCH_METHODS__",$this->switchRequestMethod->toString(),$code);
         $code = str_replace("__METHOD_HANDLER_FUNCTIONS__",$this->handlerFunctionsToString(),$code);
         $code = str_replace("__VALIDATION_CLASSES__",$this->validationClassesToString(),$code);
+        $code = str_replace("__DIR_UPS_TO_BASEPATH__",$this->getPathToAutoload(),$code);
 
         return $code;
+    }
+
+    public function updateHandlerDocument(string $documentContent):string{
+        $documentContent = $this->replaceSectionIfExists($documentContent,"require-autoload","__DIR_UPS_TO_BASEPATH__",$this->getPathToAutoload());
+        $documentContent = $this->replaceSectionIfExists($documentContent,"switch-methods","__SWITCH_METHODS__",$this->switchRequestMethod->toString());
+
+        foreach($this->requestHandlingFunctions as $handlingFunction){
+            $sectionID = "validation-".$handlingFunction->name;
+            $documentContent = $this->replaceSectionWithoutBaseCodeIfExists($documentContent,$sectionID,$handlingFunction->body);
+        }
+
+        $documentContent = $this->replaceSectionIfExists($documentContent,"validation-classes","__VALIDATION_CLASSES__",$this->validationClassesToString());
+
+        return $documentContent;
+    }
+
+    private function replaceSectionIfExists(string $documentContent, string $sectionID, string $placeholder, string $content):string{
+        if($this->generatorSectionExists($sectionID,$documentContent) == false){ return $documentContent; }
+
+        $baseSection = $this->getGeneratorSection($sectionID,$this->handlerBaseCode);
+        $existingSetion = $this->getGeneratorSection($sectionID,$documentContent);
+
+        $replaceWith = str_replace($placeholder,$content,$baseSection);
+        $documentContent = str_replace($existingSetion,$replaceWith,$documentContent);
+
+        return $documentContent;
+    }
+
+    private function replaceSectionWithoutBaseCodeIfExists(string $documentContent, string $sectionID, string $newContent):string{
+        if($this->generatorSectionExists($sectionID,$documentContent) == false){ return $documentContent; }
+
+        $existingSection = $this->getGeneratorSection($sectionID,$documentContent);
+        $newSection = '//<luapi-gen id="'.$sectionID.'">
+        '.$newContent.'
+        //</luapi-gen>';
+
+        $newContent = trim($newContent);
+
+        $documentContent = str_replace($existingSection,$newContent,$documentContent);
+
+        return $documentContent;
+    }
+
+    private function getGeneratorSection(string $id, string $document){
+        $startTag = '//<luapi-gen id="'.$id.'">';
+        $endTag = '//</luapi-gen>';
+
+        $sectionStart = strpos($document,$startTag);
+        $sectionEnd = strpos($document,$endTag,$sectionStart) + strlen($endTag);
+
+        $section = substr($document,$sectionStart,$sectionEnd-$sectionStart);
+        return $section;
+    }
+
+    private function generatorSectionExists(string $id, string $document){
+        $startTag = '//<luapi-gen id="'.$id.'">';
+        return str_contains($document,$startTag);
+    }
+
+    private function getPathToAutoload():string{
+        $relativeAutoloadPath = "";
+
+        $dirCount = substr_count($this->path,"/");
+        for($i = 0; $i < $dirCount; $i++){
+            $relativeAutoloadPath .= "../";
+        }
+
+        return $relativeAutoloadPath . $this->relativeVendorPath;
     }
 
     private function handlerFunctionsToString():string{
@@ -236,11 +333,10 @@ class APIHandlerCodeData{
     }
 
     private function validationClassesToString():string{
-        $code = '//<luapi-gen id="validation-classes">' . "\r\n";
+        $code = "";
         foreach($this->requestValidatorClasses as $validatorClass){
             $code .= $validatorClass->toString() . "\r\n";
         }
-        $code .= '//</luapi-gen>';
         return $code;
     }
 }
