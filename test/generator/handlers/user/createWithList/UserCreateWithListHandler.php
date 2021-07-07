@@ -13,20 +13,19 @@ class UserCreateWithListHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'POST':
-					
+
+			case 'POST':
 				$this->createUsersWithListInput($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function createUsersWithListInput(Request $request):mixed
+	public function createUsersWithListInput(Request $request)
 	{
 			
 		//<luapi-gen id="validation-createUsersWithListInput">

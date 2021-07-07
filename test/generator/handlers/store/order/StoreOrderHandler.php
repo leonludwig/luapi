@@ -13,26 +13,24 @@ class StoreOrderHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->getOrderById($request);
 				return;
-			
-					break;
-case 'DELETE':
-					
+				break;
+
+			case 'DELETE':
 				$this->deleteOrder($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function getOrderById(Request $request):mixed
+	public function getOrderById(Request $request)
 	{
 			
 		//<luapi-gen id="validation-getOrderById">
@@ -47,7 +45,7 @@ case 'DELETE':
 	}
 		
  
-	public function deleteOrder(Request $request):mixed
+	public function deleteOrder(Request $request)
 	{
 			
 		//<luapi-gen id="validation-deleteOrder">

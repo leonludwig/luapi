@@ -13,20 +13,19 @@ class UserLogoutHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->logoutUser($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function logoutUser(Request $request):mixed
+	public function logoutUser(Request $request)
 	{
 			
 		//<luapi-gen id="validation-logoutUser">

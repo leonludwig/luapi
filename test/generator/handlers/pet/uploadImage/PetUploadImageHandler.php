@@ -12,21 +12,20 @@ class PetUploadImageHandler extends Handler
 {
 	public function handle(Request $request)
 	{
-switch ($request->getMethod()) {
-case 'POST':
-					
-$this->uploadFile($request);
-return;
-			
-break;
-}
+		switch ($request->getMethod()) {
+
+			case 'POST':
+				$this->uploadFile($request);
+				return;
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function uploadFile(Request $request):mixed
+	public function uploadFile(Request $request)
 	{
 			
 		//<luapi-gen id="validation-uploadFile">

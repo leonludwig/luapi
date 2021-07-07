@@ -13,19 +13,22 @@ class PetHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-            case 'GET':
+
+			case 'GET':
 				$this->getPetById($request);
 				return;
-			    break;
-            case 'POST':	
+				break;
+
+			case 'POST':
 				$this->updatePetWithForm($request);
 				return;
 				break;
-            case 'DELETE':
+
+			case 'DELETE':
 				$this->deletePet($request);
 				return;
-                break;
-        }
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
@@ -62,7 +65,7 @@ class PetHandler extends Handler
 	}
 		
  
-	public function deletePet(Request $request):mixed
+	public function deletePet(Request $request)
 	{
 			
 		//<luapi-gen id="validation-deletePet">

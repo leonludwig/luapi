@@ -13,32 +13,29 @@ class UserHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->getUserByName($request);
 				return;
-			
-					break;
-case 'PUT':
-					
+				break;
+
+			case 'PUT':
 				$this->updateUser($request);
 				return;
-			
-					break;
-case 'DELETE':
-					
+				break;
+
+			case 'DELETE':
 				$this->deleteUser($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function getUserByName(Request $request):mixed
+	public function getUserByName(Request $request)
 	{
 			
 		//<luapi-gen id="validation-getUserByName">
@@ -53,7 +50,7 @@ case 'DELETE':
 	}
 		
  
-	public function updateUser(Request $request):mixed
+	public function updateUser(Request $request)
 	{
 			
 		//<luapi-gen id="validation-updateUser">
@@ -68,7 +65,7 @@ case 'DELETE':
 	}
 		
  
-	public function deleteUser(Request $request):mixed
+	public function deleteUser(Request $request)
 	{
 			
 		//<luapi-gen id="validation-deleteUser">

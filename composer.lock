@@ -1508,12 +1508,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "76ba73852f6b9f7e89bbd765eb41d43a04e4ef6e"
+                "reference": "1fc8b5e92968090cf2104f58d5a65da71cad570a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/76ba73852f6b9f7e89bbd765eb41d43a04e4ef6e",
-                "reference": "76ba73852f6b9f7e89bbd765eb41d43a04e4ef6e",
+                "url": "https://api.github.com/repos/symfony/console/zipball/1fc8b5e92968090cf2104f58d5a65da71cad570a",
+                "reference": "1fc8b5e92968090cf2104f58d5a65da71cad570a",
                 "shasum": ""
             },
             "require": {
@@ -1598,7 +1598,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-03T09:16:21+00:00"
+            "time": "2021-07-06T15:01:37+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -1674,12 +1674,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "173b7f75220b57c50682e3bf48b4ab94735b37aa"
+                "reference": "af6d70c6146ffebe76839580cd5274d89719dace"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/173b7f75220b57c50682e3bf48b4ab94735b37aa",
-                "reference": "173b7f75220b57c50682e3bf48b4ab94735b37aa",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/af6d70c6146ffebe76839580cd5274d89719dace",
+                "reference": "af6d70c6146ffebe76839580cd5274d89719dace",
                 "shasum": ""
             },
             "require": {
@@ -1751,7 +1751,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-03T09:16:21+00:00"
+            "time": "2021-07-04T09:36:51+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",

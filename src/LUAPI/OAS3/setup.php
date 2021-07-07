@@ -1,4 +1,11 @@
 <?php
+if(sizeof($argv) < 2){
+    fwrite(STDOUT,
+        'LUAPI OAS3 API Code Generator'.PHP_EOL.
+    );
+}
+
+
 function includeIfExists($file)
 {
     if (file_exists($file)) {
@@ -15,6 +22,7 @@ if ((!$loader = includeIfExists(__DIR__.'/../../../vendor/autoload.php')) && (!$
 }
 
 use LUAPI\OAS3\APICodeGenerator;
+use LUAPI\OAS3\PHPSwitchIndentationFixer;
 
 $targetDirectory = $argv[1];
 $definitionFileName = "";
@@ -48,7 +56,7 @@ try{
 }
 
 try{
-    exec("vendor/bin/php-cs-fixer fix test/generator/handlers/ --config src/LUAPI/OAS3/csfixer-config.php");
+    exec("php vendor/bin/php-cs-fixer fix test/generator/handlers/ --config src/LUAPI/OAS3/csfixer-config.php");
 } catch(Throwable $th){
     print("failed to run cs-fixer.\r\n");
     print("Error MSG:" . $th->getMessage() . "\r\n");
@@ -56,9 +64,35 @@ try{
     exit();
 }
 
-/**
- * 1. re-include php-cs-fixer
- * 2. fix all files in targetdir
- * 3. custom-fix switch(case)
- */
+try{
+    $allFiles = getDirContents($targetDirectory);
+    foreach($allFiles as $filePath){
+        if(str_ends_with($filePath,".php")){
+            $fixer = new PHPSwitchIndentationFixer($filePath);
+            $fixer->fixSwitches();
+        }
+    }
+} catch(Throwable $th){
+    echo($th->getTraceAsString());
+    print("failed to fix Switch-Cases.\r\n");
+    print("Error MSG:" . $th->getMessage() . "\r\n");
+    print("Line:" . $th->getLine() . "\r\n");
+    exit();
+}
+
+function getDirContents($dir, &$results = array()) {
+    $files = scandir($dir);
+
+    foreach ($files as $key => $value) {
+        $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+        if (!is_dir($path)) {
+            $results[] = $path;
+        } else if ($value != "." && $value != "..") {
+            getDirContents($path, $results);
+            $results[] = $path;
+        }
+    }
+
+    return $results;
+}
 ?>

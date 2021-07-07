@@ -13,20 +13,19 @@ class UserLoginHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->loginUser($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function loginUser(Request $request):mixed
+	public function loginUser(Request $request)
 	{
 			
 		//<luapi-gen id="validation-loginUser">

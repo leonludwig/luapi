@@ -13,20 +13,19 @@ class PetFindByStatusHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->findPetsByStatus($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function findPetsByStatus(Request $request):mixed
+	public function findPetsByStatus(Request $request)
 	{
 			
 		//<luapi-gen id="validation-findPetsByStatus">

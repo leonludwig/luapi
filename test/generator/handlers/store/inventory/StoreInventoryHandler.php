@@ -13,20 +13,19 @@ class StoreInventoryHandler extends Handler
 	public function handle(Request $request)
 	{
 		switch ($request->getMethod()) {
-case 'GET':
-					
+
+			case 'GET':
 				$this->getInventory($request);
 				return;
-			
-					break;
-}
+				break;
+		}
 
 		$resp = new SimpleResponse();
 		$resp->setDataAndSend(array(), "invalid method", $resp::HTTP_BAD_REQUEST);
 	}
 
 	 
-	public function getInventory(Request $request):mixed
+	public function getInventory(Request $request)
 	{
 			
 		//<luapi-gen id="validation-getInventory">
