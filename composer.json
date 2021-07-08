@@ -21,6 +21,6 @@
         }
     },
     "bin": [
-        "src/LUAPI/OAS3/CodeGeneratorCLI.php"
+        "src/LUAPI/OAS3/luapi-code-generator"
     ]
 }
