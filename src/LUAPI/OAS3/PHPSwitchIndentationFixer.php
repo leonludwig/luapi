@@ -3,30 +3,41 @@ namespace LUAPI\OAS3;
 
 use Throwable;
 
+/**
+ * A class that can be used to fix the indentation of bad formatted switch-cases in PHP documents
+ */
 class PHPSwitchIndentationFixer{
     public string $documentPath;
     public string $documentContent;
 
-    public function __construct($documentPath)
+    /**
+     * will load the content of the document at the given path
+     */
+    public function __construct($documentPath = "")
     {
-        try{
+        if($documentPath !== ""){
             $this->documentPath = $documentPath;
             $this->documentContent = file_get_contents($documentPath);
-        } catch(Throwable $th){
-            $documentContent = "";
         }
     }
 
-    public function fixSwitches(string $baseIndentation = "\t\t"){
+    /**
+     * fixes the indentation of switch cases inside the document.
+     * @param string $baseIndentation the base indentation to build (target indentation before "switch")
+     * @param string $indentation a single indentation step
+     * @param string $newLine the newLine character to use / split lines by
+     * @param string $switchIndentationPrefix the expected indentation prefix of the "switch" (usually the same as $baseIndentation)
+     */
+    public function fixSwitchesInDocument(string $baseIndentation = "\t\t", string $indentation = "\t", string $newLine = "\n", string $switchIndentationPrefix = "\t\t"){
         $oldDocumentContent = $this->documentContent;
         $newDocumentContent = $oldDocumentContent;
 
-        while(str_contains($oldDocumentContent,"\t\tswitch (")){
-            $startIndex = strpos($oldDocumentContent,"\t\tswitch (");
+        while(str_contains($oldDocumentContent,$switchIndentationPrefix."switch (")){
+            $startIndex = strpos($oldDocumentContent,$switchIndentationPrefix."switch (");
             $endIndex = strpos($oldDocumentContent,"}",$startIndex+1);
 
             $oldSwitch = substr($oldDocumentContent,$startIndex,$endIndex+1-$startIndex);
-            $newSwitch = $this->getFixedSwitch($oldSwitch,$baseIndentation);
+            $newSwitch = $this->getFixedSwitch($oldSwitch,$baseIndentation,$indentation,$newLine);
 
             $newDocumentContent = str_replace($oldSwitch,$newSwitch,$newDocumentContent);
             $oldDocumentContent = str_replace($oldSwitch,"",$oldDocumentContent);
@@ -37,10 +48,17 @@ class PHPSwitchIndentationFixer{
         fclose($handle);
     }
 
-    private function getFixedSwitch(string $switch, string $baseIndentation):string{
+    /**
+     * fixes the indentation of the provided switch case.
+     * @param string $switch the full switch-case section (from switch(){ to })
+     * @param string $baseIndentation the base indentation to build (target indentation before "switch")
+     * @param string $indentation a single indentation step
+     * @param string $newLine the newLine character to use / split lines by
+     */
+    public function getFixedSwitch(string $switch, string $baseIndentation = "\t\t", string $indentation = "\t", string $newLine = "\n"):string{
         $switch = trim($switch);
-        $switch = str_replace("\t","",$switch);
-        $switchLines = explode("\n", $switch);
+        $switch = str_replace($indentation,"",$switch);
+        $switchLines = explode($newLine, $switch);
 
         $newSwitchLines = array();
 
@@ -50,9 +68,9 @@ class PHPSwitchIndentationFixer{
             if(str_starts_with($newLine,"switch ") || str_starts_with($newLine,"}")){
                 $newLine = $baseIndentation . $newLine;
             } else if(str_starts_with($newLine,"case ")){
-                $newLine = "\n" . $baseIndentation . "\t" . $newLine;
+                $newLine = $newLine . $baseIndentation . $indentation . $newLine;
             } else {
-                $newLine = $baseIndentation . "\t\t" . $newLine;
+                $newLine = $baseIndentation . $indentation . $indentation . $newLine;
             }
 
             
@@ -62,7 +80,7 @@ class PHPSwitchIndentationFixer{
             }
         }
 
-        return implode("\n",$newSwitchLines);
+        return implode($newLine,$newSwitchLines);
     }
 }
 ?>

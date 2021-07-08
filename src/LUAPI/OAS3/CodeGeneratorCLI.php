@@ -1,4 +1,7 @@
 <?php
+/**
+ * we dont really know the location of autoload so we try the following two - error out if both dont work.
+ */
 function includeIfExists($file)
 {
     if (file_exists($file)) {
@@ -18,6 +21,7 @@ use LUAPI\OAS3\APICodeGenerator;
 use LUAPI\OAS3\PHPSwitchIndentationFixer;
 
 
+//determine which command to execute
 if(sizeof($argv) < 2){
     printHelpAndExit();
 }
@@ -31,6 +35,9 @@ if($argv[1] == "update"){
     executeUpdate();
 }
 
+/**
+ * prints the script command help and exits
+ */
 function printHelpAndExit(){
     fwrite(STDOUT,
         'LUAPI OAS3 API Code Generator'.PHP_EOL.
@@ -46,26 +53,32 @@ function printHelpAndExit(){
     exit();
 }
 
+/**
+ * executes the create command
+ */
 function executeCreate(){
     global $argv;
 
+    //check if at least target dir is provided
     if(sizeof($argv) < 3){
-        print("missing target directory!");
+        fwrite(STDERR,"missing target directory!");
         exit();
     }
 
     $targetDirectory = $argv[2];
 
+    //get vendorPath if provided. path is relative to targetDir so "" means that the "vendor" folder is in targetDir.
     $vendorPath = "";
     if(isset($argv[3])){
         $vendorPath = $argv[3];
     }
     if(file_exists($targetDirectory . $vendorPath . "/vendor/autoload.php") == false){
-        print("autoload.php not found!" . "\r\n");
-        print("generated path: " . $targetDirectory . $vendorPath . "/vendor/autoload.php" . "\r\n");
-        exit();
+        fwrite(STDERR,"autoload.php not found!" . "\r\n");
+        fwrite(STDERR,"generated path: " . $targetDirectory . $vendorPath . "/vendor/autoload.php" . "\r\n");
+        exit(1);
     }
 
+    //check if we can find any oas3 defintion file - otherwise error out
     $definitionFileName = "";
     if(file_exists($targetDirectory . "/oas3_definition.yaml")){
         $definitionFileName = $targetDirectory . "/oas3_definition.yaml";
@@ -74,74 +87,83 @@ function executeCreate(){
         $definitionFileName = $targetDirectory . "/oas3_definition.json";
     }
     if($definitionFileName == ""){
-        print("Definition file oas3_definition.[json/yaml] not found!");
-        exit();
+        fwrite(STDERR,"Definition file oas3_definition.[json/yaml] not found!");
+        exit(1);
     }
     
+    //create generator
     $generator = null;
     try{
         $generator = new APICodeGenerator($definitionFileName);
     } catch (Throwable $th){
-        print("invalid OAS3 definition.");
-        print($th->getMessage());
-        exit();
+        fwrite(STDERR,"invalid OAS3 definition.");
+        fwrite(STDERR,$th->getMessage());
+        exit(1);
     }
     
+    //build the api handlers 
     try{
         $generator->buildAPI($targetDirectory,$vendorPath);
     } catch (Throwable $th){
-        print("failed to build API.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to build API.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
     
+    //run php-cs-fixer to fix the indentation of the generated documents
     try{
         exec("php vendor/bin/php-cs-fixer fix test/generator/handlers/ --config src/LUAPI/OAS3/csfixer-config.php");
     } catch(Throwable $th){
-        print("failed to run cs-fixer.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to run cs-fixer.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
     
+    //fix indentation of switch case wusing a custom class cause cs-fixer cant help us with that
     try{
         $allFiles = getDirContents($targetDirectory);
         foreach($allFiles as $filePath){
             if(str_ends_with($filePath,".php")){
                 $fixer = new PHPSwitchIndentationFixer($filePath);
-                $fixer->fixSwitches();
+                $fixer->fixSwitchesInDocument();
             }
         }
     } catch(Throwable $th){
-        echo($th->getTraceAsString());
-        print("failed to fix Switch-Cases.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to fix Switch-Cases.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
+
+    fwrite(STDOUT,"DONE!");
+    exit(0);
 }
 
 function executeUpdate(){
     global $argv;
 
+    //check if we atleast got target dir
     if(sizeof($argv) < 3){
-        print("missing target directory!");
-        exit();
+        fwrite(STDERR,"missing target directory!");
+        exit(1);
     }
 
     $targetDirectory = $argv[2];
 
+    //get vendorPath if provided. path is relative to targetDir so "" means that the "vendor" folder is in targetDir.
     $vendorPath = "";
     if(isset($argv[3])){
         $vendorPath = $argv[3];
     }
     if(file_exists($targetDirectory . $vendorPath . "/vendor/autoload.php") == false){
-        print("autoload.php not found!" . "\r\n");
-        print("generated path: " . $targetDirectory . $vendorPath . "/vendor/autoload.php" . "\r\n");
-        exit();
+        fwrite(STDERR,"autoload.php not found!" . "\r\n");
+        fwrite(STDERR,"generated path: " . $targetDirectory . $vendorPath . "/vendor/autoload.php" . "\r\n");
+        exit(1);
     }
 
+    //check if we can find any oas3 defintion file - otherwise error out
     $definitionFileName = "";
     if(file_exists($targetDirectory . "/oas3_definition.yaml")){
         $definitionFileName = $targetDirectory . "/oas3_definition.yaml";
@@ -150,54 +172,65 @@ function executeUpdate(){
         $definitionFileName = $targetDirectory . "/oas3_definition.json";
     }
     if($definitionFileName == ""){
-        print("Definition file oas3_definition.[json/yaml] not found!");
-        exit();
+        fwrite(STDERR,"Definition file oas3_definition.[json/yaml] not found!");
+        exit(1);
     }
     
+    //create generator
     $generator = null;
     try{
         $generator = new APICodeGenerator($definitionFileName);
     } catch (Throwable $th){
-        print("invalid OAS3 definition.");
-        print($th->getMessage());
-        exit();
+        fwrite(STDERR,"invalid OAS3 definition.");
+        fwrite(STDERR,$th->getMessage());
+        exit(1);
     }
     
+    //update existing handler documents
     try{
         $generator->updateAPI($targetDirectory,$vendorPath);
     } catch (Throwable $th){
-        print("failed to build API.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to build API.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
     
+    //run php-cs-fixer to fix the indentation of the generated documents
     try{
         exec("php vendor/bin/php-cs-fixer fix test/generator/handlers/ --config src/LUAPI/OAS3/csfixer-config.php");
     } catch(Throwable $th){
-        print("failed to run cs-fixer.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to run cs-fixer.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
     
+    //fix indentation of switch case wusing a custom class cause cs-fixer cant help us with that
     try{
         $allFiles = getDirContents($targetDirectory);
         foreach($allFiles as $filePath){
             if(str_ends_with($filePath,".php")){
                 $fixer = new PHPSwitchIndentationFixer($filePath);
-                $fixer->fixSwitches();
+                $fixer->fixSwitchesInDocument();
             }
         }
     } catch(Throwable $th){
         echo($th->getTraceAsString());
-        print("failed to fix Switch-Cases.\r\n");
-        print("Error MSG:" . $th->getMessage() . "\r\n");
-        print("Line:" . $th->getLine() . "\r\n");
-        exit();
+        fwrite(STDERR,"failed to fix Switch-Cases.\r\n");
+        fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
+        fwrite(STDERR,"Line:" . $th->getLine() . "\r\n");
+        exit(1);
     }
+
+    fwrite(STDOUT,"DONE!");
+    exit(0);
 }
 
+/**
+ * recursively itterates through the given directory and returns a list of all files and directories in it
+ * @param $dir the dir to get all files & directories from
+ */
 function getDirContents($dir, &$results = array()) {
     $files = scandir($dir);
 
