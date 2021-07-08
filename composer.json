@@ -19,5 +19,8 @@
         "psr-0": {
             "LUAPI": "src/"
         }
-    }
+    },
+    "bin": [
+        "src/OAS3/CodeGeneratorCLI.php"
+    ]
 }
