@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b548904110041172e2073fb2e89e262",
+    "content-hash": "5fe0396ffda0825c551fac50417e67b1",
     "packages": [
         {
             "name": "cebe/php-openapi",
@@ -371,16 +371,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "3.0.x-dev",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "ec587dba94c3b99ecbdea17554dc1c749b751569"
+                "reference": "c15377bdfa8d1ecf186f1deadec39c89984e1167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/ec587dba94c3b99ecbdea17554dc1c749b751569",
-                "reference": "ec587dba94c3b99ecbdea17554dc1c749b751569",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/c15377bdfa8d1ecf186f1deadec39c89984e1167",
+                "reference": "c15377bdfa8d1ecf186f1deadec39c89984e1167",
                 "shasum": ""
             },
             "require": {
@@ -421,7 +421,6 @@
                 "ext-mbstring": "For handling non-UTF8 characters.",
                 "symfony/polyfill-mbstring": "When enabling `ext-mbstring` is not possible."
             },
-            "default-branch": true,
             "bin": [
                 "php-cs-fixer"
             ],
@@ -448,7 +447,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues",
-                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/3.0"
+                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.0.0"
             },
             "funding": [
                 {
@@ -456,7 +455,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-28T17:10:15+00:00"
+            "time": "2021-05-03T21:51:58+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -530,16 +529,16 @@
         },
         {
             "name": "league/openapi-psr7-validator",
-            "version": "dev-master",
+            "version": "0.16.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/openapi-psr7-validator.git",
-                "reference": "4a16cd2b0dcc6acd32d442be55292b781982ccc1"
+                "reference": "580ebf26336240417f253f77441aa12730b60735"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/openapi-psr7-validator/zipball/4a16cd2b0dcc6acd32d442be55292b781982ccc1",
-                "reference": "4a16cd2b0dcc6acd32d442be55292b781982ccc1",
+                "url": "https://api.github.com/repos/thephpleague/openapi-psr7-validator/zipball/580ebf26336240417f253f77441aa12730b60735",
+                "reference": "580ebf26336240417f253f77441aa12730b60735",
                 "shasum": ""
             },
             "require": {
@@ -565,7 +564,6 @@
                 "phpunit/phpunit": "^7 || ^8 || ^9",
                 "symfony/cache": "^5.1"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -586,9 +584,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/openapi-psr7-validator/issues",
-                "source": "https://github.com/thephpleague/openapi-psr7-validator/tree/master"
+                "source": "https://github.com/thephpleague/openapi-psr7-validator/tree/0.16.1"
             },
-            "time": "2021-06-09T17:49:15+00:00"
+            "time": "2021-05-12T16:52:09+00:00"
         },
         {
             "name": "league/uri",
@@ -2999,10 +2997,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "league/openapi-psr7-validator": 20,
-        "friendsofphp/php-cs-fixer": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
