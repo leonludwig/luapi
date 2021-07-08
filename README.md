@@ -1,13 +1,13 @@
 # What is LUAPI?
-i was looking for a simple API framework for PHP that provides basic API functionalities. I could not find something that fis my needs so I created LUAPI. Its my first public repo & package.
+i was looking for a simple API framework for PHP that provides basic rest API functionalities. I could not find something that fis my needs so I created LUAPI. Its my first public repo & package.
 
-# Setup
+# Basic Setup
 1. go to your project, open a command-line and type:
 ```
 composer require leonludwig/luapi
 ```
 2. in your webroot create an "index.php" file
-3. redirect all requests to this index.php file. example with a .htaccess file:
+3. redirect all requests to this index.php file. example with apache and a .htaccess file:
 ```
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-f
