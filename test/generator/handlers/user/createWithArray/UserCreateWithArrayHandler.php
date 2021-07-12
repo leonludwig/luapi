@@ -34,13 +34,7 @@ class UserCreateWithArrayHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {
-
-			case 'POST':
-				$this->createUsersWithArrayInput($request);
-				return;
-				break;
-		}
+		switch ($request->getMethod()) {		}case 'POST':			case 'POST':		}				$this->createUsersWithArrayInput($request);		}				return;		}				break;		}		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();

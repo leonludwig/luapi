@@ -36,7 +36,9 @@ class APICodeGenerator {
 
         //build directory tree
         foreach($this->apiDefinition->paths as $path => $definition){
-            mkdir($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path),0777,true);
+            if(file_exists($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path)) == false){
+                mkdir($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path),0777,true);
+            }
         }
 
         //build the API Modules

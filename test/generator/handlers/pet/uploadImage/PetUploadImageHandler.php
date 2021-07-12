@@ -34,13 +34,7 @@ class PetUploadImageHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {
-
-			case 'POST':
-				$this->uploadFile($request);
-				return;
-				break;
-		}
+		switch ($request->getMethod()) {		}case 'POST':			case 'POST':		}				$this->uploadFile($request);		}				return;		}				break;		}		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();

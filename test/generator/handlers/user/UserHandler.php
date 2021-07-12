@@ -34,23 +34,7 @@ class UserHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {
-
-			case 'GET':
-				$this->getUserByName($request);
-				return;
-				break;
-
-			case 'PUT':
-				$this->updateUser($request);
-				return;
-				break;
-
-			case 'DELETE':
-				$this->deleteUser($request);
-				return;
-				break;
-		}
+		switch ($request->getMethod()) {		}case 'GET':			case 'GET':		}				$this->getUserByName($request);		}				return;		}				break;		}case 'PUT':			case 'PUT':		}				$this->updateUser($request);		}				return;		}				break;		}case 'DELETE':			case 'DELETE':		}				$this->deleteUser($request);		}				return;		}				break;		}		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();

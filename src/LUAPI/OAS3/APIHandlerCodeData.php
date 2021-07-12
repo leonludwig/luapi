@@ -173,7 +173,7 @@ class APIHandlerCodeData{
             ';
         }
         //insert body validation info in code template
-        if($methodDefinition->requestBody->required && isset($methodDefinition->requestBody->content["application/json"])){
+        if($methodDefinition->requestBody !== null && $methodDefinition->requestBody->required && isset($methodDefinition->requestBody->content["application/json"])){
             $validationCode .= '
             $result = $this->validateBody('.$this->boolToString($methodDefinition->requestBody->required).','.$this->stringifyParameter(json_encode($methodDefinition->requestBody->content["application/json"]->getSerializableData())).');
             if($result == false){

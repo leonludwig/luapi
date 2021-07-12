@@ -34,13 +34,7 @@ class UserLoginHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {
-
-			case 'GET':
-				$this->loginUser($request);
-				return;
-				break;
-		}
+		switch ($request->getMethod()) {		}case 'GET':			case 'GET':		}				$this->loginUser($request);		}				return;		}				break;		}		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();

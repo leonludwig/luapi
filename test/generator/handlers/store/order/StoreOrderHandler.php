@@ -34,18 +34,7 @@ class StoreOrderHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {
-
-			case 'GET':
-				$this->getOrderById($request);
-				return;
-				break;
-
-			case 'DELETE':
-				$this->deleteOrder($request);
-				return;
-				break;
-		}
+		switch ($request->getMethod()) {		}case 'GET':			case 'GET':		}				$this->getOrderById($request);		}				return;		}				break;		}case 'DELETE':			case 'DELETE':		}				$this->deleteOrder($request);		}				return;		}				break;		}		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();
