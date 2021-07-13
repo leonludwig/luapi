@@ -34,7 +34,7 @@ abstract class PDOConnector{
      */
     private function loadConfig(string $configFilePath):array{
         $fileContent = file_get_contents($configFilePath);
-        $jsonContent = json_decode($fileContent);
+        $jsonContent = json_decode($fileContent,true);
         if($jsonContent !== null && $jsonContent !== false){
             return $jsonContent;
         }
