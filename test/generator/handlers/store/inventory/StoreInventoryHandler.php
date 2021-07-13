@@ -34,7 +34,13 @@ class StoreInventoryHandler extends Handler
 	public function handle(Request $request)
 	{
 		//<luapi-gen id="switch-methods">
-		switch ($request->getMethod()) {		}case 'GET':			case 'GET':		}				$this->getInventory($request);		}				return;		}				break;		}		}
+		switch ($request->getMethod()) {
+
+			case 'GET':
+				$this->getInventory($request);
+				return;
+				break;
+		}
 		//</luapi-gen>
 
 		$resp = new SimpleResponse();
