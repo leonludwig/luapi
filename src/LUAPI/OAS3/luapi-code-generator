@@ -99,7 +99,7 @@ function executeCreate(){
     
     //run php-cs-fixer to fix the indentation of the generated documents
     try{
-        exec("php vendor/bin/php-cs-fixer fix ".$targetDirectory."/handlers --config src/LUAPI/OAS3/csfixer-config.php");
+        exec("php vendor/bin/php-cs-fixer fix ".$targetDirectory."/handlers --config vendor/leonludwig/luapi/src/LUAPI/OAS3/csfixer-config.php");
     } catch(Throwable $th){
         fwrite(STDERR,"failed to run cs-fixer.\r\n");
         fwrite(STDERR,"Error MSG:" . $th->getMessage() . "\r\n");
