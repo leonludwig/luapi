@@ -28,16 +28,16 @@ class PHPSwitchIndentationFixer{
      * @param string $newLine the newLine character to use / split lines by
      * @param string $switchIndentationPrefix the expected indentation prefix of the "switch" (usually the same as $baseIndentation)
      */
-    public function fixSwitchesInDocument(string $baseIndentation = "\t\t", string $indentation = "\t", string $newLine = "\n", string $switchIndentationPrefix = "\t\t"){
+    public function fixSwitchesInDocument(string $baseIndentation = "\t\t"){
         $oldDocumentContent = $this->documentContent;
         $newDocumentContent = $oldDocumentContent;
 
-        while(str_contains($oldDocumentContent,$switchIndentationPrefix."switch (")){
-            $startIndex = strpos($oldDocumentContent,$switchIndentationPrefix."switch (");
+        while(str_contains($oldDocumentContent,"\t\tswitch (")){
+            $startIndex = strpos($oldDocumentContent,"\t\tswitch (");
             $endIndex = strpos($oldDocumentContent,"}",$startIndex+1);
 
             $oldSwitch = substr($oldDocumentContent,$startIndex,$endIndex+1-$startIndex);
-            $newSwitch = $this->getFixedSwitch($oldSwitch,$baseIndentation,$indentation,$newLine);
+            $newSwitch = $this->getFixedSwitch($oldSwitch,$baseIndentation);
 
             $newDocumentContent = str_replace($oldSwitch,$newSwitch,$newDocumentContent);
             $oldDocumentContent = str_replace($oldSwitch,"",$oldDocumentContent);
@@ -55,10 +55,10 @@ class PHPSwitchIndentationFixer{
      * @param string $indentation a single indentation step
      * @param string $newLine the newLine character to use / split lines by
      */
-    public function getFixedSwitch(string $switch, string $baseIndentation = "\t\t", string $indentation = "\t", string $newLine = "\n"):string{
+    public function getFixedSwitch(string $switch, string $baseIndentation = "\t\t"):string{
         $switch = trim($switch);
-        $switch = str_replace($indentation,"",$switch);
-        $switchLines = explode($newLine, $switch);
+        $switch = str_replace("\t","",$switch);
+        $switchLines = explode("\n", $switch);
 
         $newSwitchLines = array();
 
@@ -68,19 +68,19 @@ class PHPSwitchIndentationFixer{
             if(str_starts_with($newLine,"switch ") || str_starts_with($newLine,"}")){
                 $newLine = $baseIndentation . $newLine;
             } else if(str_starts_with($newLine,"case ")){
-                $newLine = $newLine . $baseIndentation . $indentation . $newLine;
+                $newLine = "\n" . $baseIndentation . "\t" . $newLine;
             } else {
-                $newLine = $baseIndentation . $indentation . $indentation . $newLine;
+                $newLine = $baseIndentation . "\t\t" . $newLine;
             }
 
-            
+
 
             if(trim($line) !== ""){
                 array_push($newSwitchLines,$newLine);
             }
         }
 
-        return implode($newLine,$newSwitchLines);
+        return implode("\n",$newSwitchLines);
     }
 }
 ?>
