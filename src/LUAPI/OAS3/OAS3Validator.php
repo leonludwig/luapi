@@ -101,7 +101,7 @@ abstract class OAS3Validator {
             return true;
         }
 
-        $value = $this->req->getRawBody();
+        $value = json_decode($this->req->getRawBody(),true);
         return $this->validateAgainstSchema($oas3Schema,$value);
     }
 
