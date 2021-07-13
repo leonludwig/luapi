@@ -81,8 +81,9 @@ class APIHandlerCodeData{
      * returns the basic handlername for the given path. Example /user/login results in UserLogin
      */
     private function getHandlerNameForPath(string $filePath):string{
-        //remove parameters (query and path)
-        $path = preg_replace("/{([a-zA-Z\d]{1,})}/","",$filePath);
+        //remove parameter indicators (query and path)
+        $path = str_replace("{","",$filePath);
+        $path = str_replace("}","",$path);
         $path = preg_replace('/\/\//', '/', $path);
         if(strpos($path,"?") !== false){
             $path = substr($path,0,strpos($path,"?")-1);
@@ -304,8 +305,15 @@ class APIHandlerCodeData{
         $relativeAutoloadPath = "";
 
         $dirCount = substr_count($this->path,"/");
+        if($this->relativeVendorPath !== ""){
+            $dirCount++;
+        }
         for($i = 0; $i < $dirCount; $i++){
             $relativeAutoloadPath .= "../";
+        }
+
+        if($this->relativeVendorPath !== ""){
+            $relativeAutoloadPath = substr($relativeAutoloadPath,0,strlen($relativeAutoloadPath)-1);
         }
 
         return $relativeAutoloadPath . $this->relativeVendorPath;

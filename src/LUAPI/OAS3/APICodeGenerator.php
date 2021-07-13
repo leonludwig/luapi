@@ -36,8 +36,8 @@ class APICodeGenerator {
 
         //build directory tree
         foreach($this->apiDefinition->paths as $path => $definition){
-            if(file_exists($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path)) == false){
-                mkdir($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path),0777,true);
+            if(file_exists($targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($path)) == false){
+                mkdir($targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($path),0777,true);
             }
         }
 
@@ -63,8 +63,8 @@ class APICodeGenerator {
 
         //build directory tree (if necessary)
         foreach($this->apiDefinition->paths as $path => $definition){
-            if(file_exists($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path)) == false){
-                mkdir($targetDirectory . '/handlers/' . $this->removeParametersFromPath($path),0777,true);
+            if(file_exists($targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($path)) == false){
+                mkdir($targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($path),0777,true);
             }
         }
 
@@ -73,7 +73,7 @@ class APICodeGenerator {
 
         foreach($this->handlers as $handler){
             $fileName = $handler->handlerName . '.php';
-            $handlerPath = $targetDirectory . '/handlers/' . $this->removeParametersFromPath($handler->path);
+            $handlerPath = $targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($handler->path);
 
             if(file_exists($handlerPath . '/' . $fileName)){
                 $this->updateHandler($handler,$targetDirectory);
@@ -90,7 +90,7 @@ class APICodeGenerator {
      */
     private function createHandler(APIHandlerCodeData $handler, string $targetDirectory):void{
         $fileName = $handler->handlerName . '.php';
-        $handlerPath = $targetDirectory . '/handlers/' . $this->removeParametersFromPath($handler->path);
+        $handlerPath = $targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($handler->path);
 
         try{
             $fileHandle = fopen($handlerPath . '/' . $fileName,"w");
@@ -109,7 +109,7 @@ class APICodeGenerator {
      */
     private function updateHandler(APIHandlerCodeData $handler, string $targetDirectory):void{
         $fileName = $handler->handlerName . '.php';
-        $handlerPath = $targetDirectory . '/handlers/' . $this->removeParametersFromPath($handler->path);
+        $handlerPath = $targetDirectory . '/handlers/' . $this->removeParameterIndicatorsFromPath($handler->path);
         
         try{
             $existingDocument = file_get_contents($handlerPath . '/' . $fileName);
@@ -144,6 +144,20 @@ class APICodeGenerator {
      */
     private function removeParametersFromPath(string $path):string{
         $path = preg_replace("/{([a-zA-Z\d]{1,})}/","",$path);
+        $path = preg_replace('/\/\//', '/', $path);
+        if(strpos($path,"?") !== false){
+            $path = substr($path,0,strpos($path,"?")-1);
+        }
+        return $path;
+    }
+
+    /**
+     * removes possible parameter indicators from the given path and removes all query parameters
+     * @param string $path the path
+     */
+    private function removeParameterIndicatorsFromPath(string $path):string{
+        $path = str_replace("{","",$path);
+        $path = str_replace("}","",$path);
         $path = preg_replace('/\/\//', '/', $path);
         if(strpos($path,"?") !== false){
             $path = substr($path,0,strpos($path,"?")-1);
