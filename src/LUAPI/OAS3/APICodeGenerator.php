@@ -173,7 +173,7 @@ class APICodeGenerator {
     private function createHandlersJSONFile(string $targetDirectory){
         $jsonObject = array();
         foreach($this->handlers as $handler){
-            $handlerPath = '/handlers/' . $this->removeParameterIndicatorsFromPath($handler->path) . "/" . $handler->handlerName . '.php';
+            $handlerPath = '/handlers' . $this->removeParameterIndicatorsFromPath($handler->path) . "/" . $handler->handlerName . '.php';
             $jsonObject[$handler->path] = array(
                 "path" => $handlerPath,
                 "className" => $handler->handlerName
