@@ -12,15 +12,6 @@ $myAPI = new API();
 
 class MyCustomHandler extends Handler{
     public function handle(Request $request){
-        $schema = new JSONSchemaBuilder();
-        $schema->expect("company",new SchemaString("name",3,50));
-        $schema->expect("company.address",new SchemaString("street",3,50));
-        $schema->expect("company.address",new SchemaNumber("houseNr",true));
-        $schema->expect("responsible",new SchemaString("firstName",2,50));
-        $schema->expect("responsible",new SchemaString("lastName",2,50));
-
-        $isMatch = $request->bodyMatchesSchema($schema->toSchema());
-
         $resp = new Response();
         $resp->setData(array(
             "hello" => "test!"
