@@ -181,7 +181,7 @@ class APICodeGenerator {
         }
 
         $handle = fopen($targetDirectory . "/handlers.json","w");
-        fwrite($handle,json_encode($jsonObject));
+        fwrite($handle,json_encode($jsonObject,JSON_UNESCAPED_SLASHES));
         fclose($handle);
     }
 }

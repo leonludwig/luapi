@@ -58,7 +58,7 @@ class JSONSchemaBuilder {
      * @return string the JSON schema
      */
     public function toJSON():string{
-        return json_encode($this->data);
+        return json_encode($this->data,JSON_UNESCAPED_SLASHES);
     }
 
     /**

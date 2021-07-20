@@ -126,7 +126,7 @@ class Response{
      */
     public function send():void{
         header('Content-Type: application/json; charset=UTF-8');
-        echo(json_encode($this->data));
+        echo(json_encode($this->data,JSON_UNESCAPED_SLASHES));
     }
 }
 ?>
