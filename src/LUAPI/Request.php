@@ -9,14 +9,13 @@ use Swaggest\JsonSchema\Schema;
  */
 class Request {
     /**
-     * WARNING: LUAPI is built for APIs that use JSON bodies! Try to change your client to send the request with all parameters in a json body.
      * an associative array containing the url parameters. similar to $_GET.
      */
     public array $queryParameters;
     /**
      * an associative array containing the url variables. defined in the API Route.
      */
-    public array $urlVariables;
+    public array $pathParameters;
     /**
      * WARNING: LUAPI is built for APIs that use JSON bodies! Try to change your client to send the request with all parameters in a json body.
      * an associative array containing the parameters in the posted body (application/x-www-form-urlencoded). similar to $_POST.
@@ -25,7 +24,7 @@ class Request {
     /**
      * an associative array containing the parameters in the posted JSON body.
      */
-    public array $bodyParameters;
+    public array $bodyObject;
 
 
     /**
@@ -34,9 +33,9 @@ class Request {
     public function __construct(array $urlVars)
     {
         $this->queryParameters = $_GET;
-        $this->urlVariables = $urlVars;
+        $this->pathParameters = $urlVars;
         $this->formParameters = $_POST;
-        $this->bodyParameters = $this->getBodyParameters();
+        $this->bodyObject = $this->getBodyObject();
     }
 
     /**
@@ -51,7 +50,7 @@ class Request {
      * @return bool whether the request method matches your expectation (case insensitive)
      */
     public function isMethod(string $expected):bool{
-        return strtolower($this->getMethod() === strtolower($expected));
+        return strtolower($this->getMethod()) === strtolower($expected);
     }
 
     /**
@@ -70,7 +69,7 @@ class Request {
      * json-decodes the request body. will return an empty array on error.
      * @return array an associative array of the posted json
      */
-    private function getBodyParameters():array{
+    private function getBodyObject():array{
         try {
             $inputJSON = $this->getRawBody();
             $input = json_decode($inputJSON, TRUE);
@@ -84,18 +83,20 @@ class Request {
     }
 
     /**
+     * returns the value at the given key inside the BODY OBJECT
      * @param string $key the name of the parameter
      * @return mixed|false the parameter value or false if not found
      */
     public function getParameter(string $key):mixed{
-        if(isset($bodyParameters[$key])){
-            return $bodyParameters[$key];
+        if(isset($bodyObject[$key])){
+            return $bodyObject[$key];
         }
         return false;
     }
 
     /**
-     * synonym for getParameter. just shorter.
+     * synonym for getParameter.
+     * @see getParamater
      */
     public function param(string $key):mixed{
         return $this->getParameter($key);

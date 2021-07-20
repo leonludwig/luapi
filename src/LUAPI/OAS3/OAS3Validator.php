@@ -57,11 +57,11 @@ abstract class OAS3Validator {
     }
 
     public function validateURLParameter(string $name, string $oas3Schema, bool $required):bool{
-        if($required == false && !isset($this->req->urlVariables[$name])){
+        if($required == false && !isset($this->req->pathParameters[$name])){
             return true;
         }
 
-        $value = $this->req->urlVariables[$name];
+        $value = $this->req->pathParameters[$name];
         return $this->validateAgainstSchema($oas3Schema,$value);
     }
 
