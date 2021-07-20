@@ -47,6 +47,8 @@ class APICodeGenerator {
         foreach($this->handlers as $handler){
             $this->createHandler($handler,$targetDirectory);
         }
+
+        $this->createHandlersJSONFile($targetDirectory);
     }
 
     /**
@@ -81,6 +83,8 @@ class APICodeGenerator {
                 $this->createHandler($handler,$targetDirectory);
             }
         }
+
+        $this->createHandlersJSONFile($targetDirectory);
     }
 
     /**
@@ -139,19 +143,6 @@ class APICodeGenerator {
     }
 
     /**
-     * removes possible parameters from the given path (parameters provided as "{parameterName}" or via query)
-     * @param string $path the path
-     */
-    private function removeParametersFromPath(string $path):string{
-        $path = preg_replace("/{([a-zA-Z\d]{1,})}/","",$path);
-        $path = preg_replace('/\/\//', '/', $path);
-        if(strpos($path,"?") !== false){
-            $path = substr($path,0,strpos($path,"?")-1);
-        }
-        return $path;
-    }
-
-    /**
      * removes possible parameter indicators from the given path and removes all query parameters
      * @param string $path the path
      */
@@ -173,6 +164,25 @@ class APICodeGenerator {
         foreach($this->apiDefinition->paths as $path => $definition){
             $this->handlers[$path] = new APIHandlerCodeData($path,$definition,$relativeVendorPath);
         }
+    }
+
+    /**
+     * creates a file called "handlers.json" inside the targetdirectory.
+     * the file is required by the API class object.
+     */
+    private function createHandlersJSONFile(string $targetDirectory){
+        $jsonObject = array();
+        foreach($this->handlers as $handler){
+            $handlerPath = '/handlers/' . $this->removeParameterIndicatorsFromPath($handler->path) . "/" . $handler->handlerName . '.php';
+            $jsonObject[$handler->path] = array(
+                "path" => $handlerPath,
+                "className" => $handler->handlerName
+            );
+        }
+
+        $handle = fopen($targetDirectory . "/handlers.json","w");
+        fwrite($handle,json_encode($jsonObject));
+        fclose($handle);
     }
 }
 ?>

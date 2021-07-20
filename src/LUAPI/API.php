@@ -4,16 +4,17 @@ namespace LUAPI;
 use LUAPI\Handler;
 use LUAPI\Request;
 use LUAPI\APIRoute;
+use Throwable;
 
 class API {
     /**
-     * an array containing arrays of [route,handler]
+     * an associative array with the routes as keys and the sub-properties "path" and "className"
      */
     private array $handlers = array();
     /**
      * the default handler used when no handler was found for a request uri
      */
-    private ?Handler $defaultHandler = null;
+    private ?array $defaultHandler = null;
 
     public function __construct()
     {
@@ -21,31 +22,33 @@ class API {
     }
 
     /**
-     * add a handler for a specific request route.
-     * @param string $route the api route. the api route: can contain variables noted like {varName}. Example: /api/user/{id}
-     * @param Handler $handler the Handler that should handle requests to this api route
-     * @return bool will return false if creating an APIRoute-Object for the given route string failed.
+     * loads the handler information from the file at the given path. file should look like:
+     * {
+     *      "/handler/api/route":{
+     *          "path":"/path/to/handler.php",
+     *          "className":"NameHandler"
+     *      }
+     * }
      */
-    public function addHandler(string $route, Handler $handler):bool{
-        try {
-            $routeObj = new APIRoute($route); //try to create a route object.
-        } catch (\Throwable $th) {
-            $routeObj = null; //if it fails, set the object to null which will result in a return false
-        }
-
-        if($routeObj !== null){
-            array_push($this->handlers,array($routeObj,$handler));
+    public function loadHandlers(string $jsonFilePath):bool{
+        try{
+            $this->handlers = json_decode(file_get_contents($jsonFilePath),true);
             return true;
+        } catch(Throwable $th){
+            return false;
         }
-        return false;
     }
 
     /**
      * sets the default handler. used when no matching handler is found for a request URI.
-     * @param Handler $handler the default handler. should not depend on any specific parameters or URL variables.
+     * @param string $handler the default handler className. should not depend on any specific parameters or URL variables.
+     * @param string $path the path to the handler php file.
      */
-    public function addDefaultHandler(Handler $handler):void{
-        $this->defaultHandler = $handler;
+    public function setDefaultHandlerNameAndPath(string $handler, string $path):void{
+        $this->defaultHandler = array(
+            "path" => $path,
+            "className" => $handler
+        );
     }
 
     /**
@@ -54,26 +57,28 @@ class API {
      */
     public function handleRequest():bool{
         $uri = $_SERVER["REQUEST_URI"];
-        $handler = null;
+        $handlerData = null;
+        $urlVars = null;
 
         //for each handler: check if its apiroute matches the request uri
-        foreach($this->handlers as $routeAndHandler){
-            $route = $routeAndHandler[0];
+        foreach($this->handlers as $handlerPath => $handlerInfo){
+            $route = new APIRoute($handlerPath);
             $urlVars = $route->matchURI($uri); //returns false if no match, otherwise will be a list of the url variables
             if(is_array($urlVars)){ 
-                $handler = $routeAndHandler[1];
-                break;
+                $handlerData = $handlerInfo;
             }
         }
 
-        //no handler found? try to use the default one
-        if($handler === null && $this->defaultHandler !== null){
-            $handler = $this->defaultHandler;
-        }
-        //no default handler? return false
-        if($handler === null){
+        if($handlerData == null && $this->defaultHandler == null){ //if handlerdata and defaulthandler are null, we cant handle the request
             return false;
+        } else if($handlerData == null && is_array($this->defaultHandler)){ //if handlerdata is null and defaulthandler is array, we set handler to the default
+            $handlerData = $this->defaultHandler;
         }
+
+        if($handlerData["path"] !== ""){ //if path is specified, we have to include it
+            include(getcwd() . $handlerData["path"]);
+        }
+        $handler = new $handlerData["className"](); //creating the handler based on its class name
 
         //create request and handle it
         if(is_array($urlVars) === false){ $urlVars = array(); } //for default handler (no variables)

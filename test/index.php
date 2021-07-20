@@ -23,13 +23,14 @@ class MyCustomHandler extends Handler{
 
         $resp = new Response();
         $resp->setData(array(
-            "hello" => "world!"
+            "hello" => "test!"
         ));
         $resp->send();
     }
 }
 
-$myAPI->addHandler("/home/test",New MyCustomHandler());
+$myAPI->loadHandlers(__DIR__ . "/handlers.json");
+$myAPI->setDefaultHandlerNameAndPath("MyCustomHandler","");
 
 $myAPI->handleRequest();
 ?>

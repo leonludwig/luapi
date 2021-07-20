@@ -1,0 +1,10 @@
+{
+    "/home/test":{
+        "path":"",
+        "className":"MyCustomHandler"
+    },
+    "/test/{variable}":{
+        "path":"/handlers/TestHandler.php",
+        "className":"TestHandler"
+    }
+}
