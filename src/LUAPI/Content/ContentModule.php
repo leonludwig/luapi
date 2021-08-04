@@ -2,8 +2,8 @@
 namespace LUAPI\Content;
 
 use LUAPI\Database\Connectors\PDOConnector;
-use LUAPI\Database\Interfaces\SQLInterface;
 use LUAPI\Content\ContentModuleField;
+use LUAPI\Database\Interfaces\MySQLInterface;
 
 /**
  * an abstract class that provides an interfaces for API/Program Content that is based on a simple database table or JSON Object.
@@ -204,7 +204,7 @@ abstract class ContentModule{
      * @return bool whether the content was loaded successfully
      */
     public function loadContentFromDatabase(PDOConnector $dbConnector):bool{
-        $interface = new SQLInterface($dbConnector);
+        $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBSelect();
         $result = $interface->queryAndFetchPrepared($cmdAndValues[0],$cmdAndValues[1]);
         if($result == false){
@@ -220,7 +220,7 @@ abstract class ContentModule{
      * @return bool whether the object was deleted successfully
      */
     public function deleteFromDatabase(PDOConnector $dbConnector):bool{
-        $interface = new SQLInterface($dbConnector);
+        $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBDelete();
         $result = $interface->executePrepared($cmdAndValues[0],$cmdAndValues[1]);
         if($result == false){ return false; }
@@ -241,7 +241,7 @@ abstract class ContentModule{
             $cmdAndValues = $this->generateDBUpdate();
         }
 
-        $interface = new SQLInterface($dbConnector);
+        $interface = new MySQLInterface($dbConnector);
         $result = $interface->executePreparedAndGetColumnValue($cmdAndValues[0],$cmdAndValues[1],$this->keyFieldName);
         if($result == false){ return false; }
         if($this->isNewElement()){
@@ -268,7 +268,7 @@ abstract class ContentModule{
         $sql = "UPDATE ".$this->dbTableName." SET ".$field->dbFieldName." = :".$field->dbFieldName." WHERE ".$this->keyFieldName." = :".$this->keyFieldName;
         $values = array(":".$this->keyFieldName => $this->classFields[$this->keyFieldName]->getValue());
 
-        $interface = new SQLInterface($dbConnector);
+        $interface = new MySQLInterface($dbConnector);
         $result = $interface->executePrepared($sql,$values);
 
         if($result == false){
