@@ -61,13 +61,25 @@ class API {
         $urlVars = null;
 
         //for each handler: check if its apiroute matches the request uri
+        $tempHandlerData = null;
+        $tempUrlVars = null;
         foreach($this->handlers as $handlerPath => $handlerInfo){
             $route = new APIRoute($handlerPath);
-            $urlVars = $route->matchURI($uri); //returns false if no match, otherwise will be a list of the url variables
-            if(is_array($urlVars)){ 
-                $handlerData = $handlerInfo;
+            $_UrlVars = $route->matchURI($uri); //returns false if no match, otherwise will be a list of the url variables
+
+            if(is_array($_UrlVars)){ //is match
+                $isMatchWithoutUrlVars = count($_UrlVars) == 0;
+                $tempHandlerData = $handlerInfo;
+                $tempUrlVars = $_UrlVars;
+                if($isMatchWithoutUrlVars){ //we found the best possible match
+                    break;
+                }
+                //otherwise, well take the last match we find
             }
         }
+
+        $handlerData = $tempHandlerData;
+        $urlVars = $tempUrlVars;
 
         if($handlerData == null && $this->defaultHandler == null){ //if handlerdata and defaulthandler are null, we cant handle the request
             return false;

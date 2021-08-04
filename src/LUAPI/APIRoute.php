@@ -42,6 +42,13 @@ class APIRoute{
         return $uri;
     }
 
+    private function removeQuery(string $uri):string{
+        if(str_contains($uri,"?")){
+            return substr($uri,0,strpos($uri,"?"));
+        }
+        return $uri;
+    }
+
     /**
      * extracts the variable names from the route
      * @return array the variable names
@@ -58,7 +65,7 @@ class APIRoute{
      */
     private function buildRegexPattern():string{
         //replace the variable notations with a regex that matches anything between
-        $pattern = preg_replace("/{([a-zA-Z\d]{1,})}/","(.*)",$this->baseRoute);
+        $pattern = preg_replace("/{([a-zA-Z\d]{1,})}/","(.*)",$this->removeTrailingSlash($this->baseRoute));
         //escape the slashes in the route to create a vallid pattern
         $pattern = str_replace("/","\/",$pattern);
         return "/$pattern/";
@@ -69,11 +76,13 @@ class APIRoute{
      * @param string $uri the request uri
      */
     public function matchURI(string $uri):mixed{
-        $uri = $this->removeTrailingSlash($uri);
+        $uri = $this->removeQuery($this->removeTrailingSlash($uri));
         $matches = array(array(),array()); //build the default return value of an empty match
         preg_match_all($this->regexPattern,$uri,$matches);
-        if(count($matches[0]) == 0){ //if its matching, the first array in matches will contain the whole uri
-            return false;
+
+        if(count($matches[0]) == 0){ return false; } //not a single match!
+        if(count($matches) == 1){ //1 match
+            if($matches[0][0] != $uri){ return false; } //this can be a partly match so we return false if so
         }
         
         $vars = array();
