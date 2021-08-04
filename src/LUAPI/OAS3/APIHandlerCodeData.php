@@ -313,7 +313,8 @@ class APIHandlerCodeData{
         }
 
         if($this->relativeVendorPath !== ""){
-            $relativeAutoloadPath = substr($relativeAutoloadPath,0,strlen($relativeAutoloadPath)-1);
+            //remove last slash and add one in front
+            $relativeAutoloadPath = "/" . substr($relativeAutoloadPath,0,strlen($relativeAutoloadPath)-1);
         }
 
         return $relativeAutoloadPath . $this->relativeVendorPath;
