@@ -114,7 +114,8 @@ class Request {
             $key = "HTTP_" . $key;
         }
 
-        return $_SERVER[$key];
+        if(isset($_SERVER[$key])){ return $_SERVER[$key]; }
+        return "";
     }
 
     /**
