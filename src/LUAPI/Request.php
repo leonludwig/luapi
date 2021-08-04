@@ -88,8 +88,8 @@ class Request {
      * @return mixed|false the parameter value or false if not found
      */
     public function getParameter(string $key):mixed{
-        if(isset($bodyObject[$key])){
-            return $bodyObject[$key];
+        if(isset($this->bodyObject[$key])){
+            return $this->bodyObject[$key];
         }
         return false;
     }
