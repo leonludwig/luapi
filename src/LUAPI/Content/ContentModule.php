@@ -207,7 +207,7 @@ abstract class ContentModule{
         $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBSelect();
         $result = $interface->queryAndFetchPrepared($cmdAndValues[0],$cmdAndValues[1]);
-        if($result == false){
+        if($result === false){
             return false;
         }
         return $this->setContentFromDBRow($result);
@@ -223,7 +223,7 @@ abstract class ContentModule{
         $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBDelete();
         $result = $interface->executePrepared($cmdAndValues[0],$cmdAndValues[1]);
-        if($result == false){ return false; }
+        if($result === false){ return false; }
         return true;
     }
 
@@ -271,7 +271,7 @@ abstract class ContentModule{
         $interface = new MySQLInterface($dbConnector);
         $result = $interface->executePrepared($sql,$values);
 
-        if($result == false){
+        if($result === false){
             return false;
         } else {
             return true;
