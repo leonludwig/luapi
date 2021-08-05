@@ -2,12 +2,7 @@
 namespace LUAPI\OAS3;
 
 use LUAPI\Request;
-use cebe\openapi\Reader;
-use cebe\openapi\spec\Schema;
-use League\OpenAPIValidation\Schema\SchemaValidator;
-use League\OpenAPIValidation\Schema\Exception;
-use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
-use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use Swaggest\JsonSchema\Schema;
 
 /**
  * a class that can be used to validate input parameters against an oas3 schema
@@ -18,8 +13,6 @@ abstract class OAS3Validator {
      */
     public Request $req;
 
-    public SchemaValidator $validator;
-
     /**
      * constructs the object.
      * @param Request $req the request to get the parameter values from
@@ -27,7 +20,6 @@ abstract class OAS3Validator {
     public function __construct(Request $req)
     {
         $this->req = $req;
-        $this->validator = new SchemaValidator(SchemaValidator::VALIDATE_AS_REQUEST);
     }
 
     /**
@@ -111,12 +103,18 @@ abstract class OAS3Validator {
      * @param mixed $value the value to check
      */
     public function validateAgainstSchema(string $oas3Schema, mixed $value):bool{
-        $spec = Reader::readFromJson($oas3Schema);
-        $schema = new Schema($spec->schema);
-        try{
-            $this->validator->validate($value,$schema);
+        //the schema we need may be included inside an object clled "schema"
+        $schemaJsonObj = json_decode($oas3Schema,true);
+        if(isset($schemaJsonObj["schema"])){
+            $oas3Schema = json_encode($schemaJsonObj["schema"]);
+        }
+
+        $schema = Schema::import(json_decode($oas3Schema));
+
+        try {
+            $obj = $schema->in(json_decode(json_encode($value)));
             return true;
-        } catch(SchemaMismatch $e){
+        } catch (\Swaggest\JsonSchema\InvalidValue $val) {
             return false;
         }
     }
