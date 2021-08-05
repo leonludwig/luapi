@@ -243,7 +243,7 @@ abstract class ContentModule{
 
         $interface = new MySQLInterface($dbConnector);
         $result = $interface->executePreparedAndGetColumnValue($cmdAndValues[0],$cmdAndValues[1],$this->keyFieldName);
-        if($result == false){ return false; }
+        if($result === false){ return false; }
         if($this->isNewElement()){
             return $result;
         } else {
