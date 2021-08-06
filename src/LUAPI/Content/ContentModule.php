@@ -4,6 +4,7 @@ namespace LUAPI\Content;
 use LUAPI\Database\Connectors\PDOConnector;
 use LUAPI\Content\ContentModuleField;
 use LUAPI\Database\Interfaces\MySQLInterface;
+use Throwable;
 
 /**
  * an abstract class that provides an interfaces for API/Program Content that is based on a simple database table or JSON Object.
@@ -206,8 +207,9 @@ abstract class ContentModule{
     public function loadContentFromDatabase(PDOConnector $dbConnector):bool{
         $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBSelect();
-        $result = $interface->queryAndFetchPrepared($cmdAndValues[0],$cmdAndValues[1]);
-        if($result === false){
+        try{
+            $result = $interface->queryAndFetchPrepared($cmdAndValues[0],$cmdAndValues[1]);
+        } catch(Throwable $th){
             return false;
         }
         return $this->setContentFromDBRow($result);
@@ -222,9 +224,12 @@ abstract class ContentModule{
     public function deleteFromDatabase(PDOConnector $dbConnector):bool{
         $interface = new MySQLInterface($dbConnector);
         $cmdAndValues = $this->generateDBDelete();
-        $result = $interface->executePrepared($cmdAndValues[0],$cmdAndValues[1]);
-        if($result === false){ return false; }
-        return true;
+        try{
+            $result = $interface->executePrepared($cmdAndValues[0],$cmdAndValues[1]);
+        } catch(Throwable $th){
+            return false;
+        }
+        return $result;
     }
 
     /**
@@ -242,8 +247,12 @@ abstract class ContentModule{
         }
 
         $interface = new MySQLInterface($dbConnector);
-        $result = $interface->executePreparedAndGetColumnValue($cmdAndValues[0],$cmdAndValues[1],$this->keyFieldName);
-        if($result === false){ return false; }
+        try{
+            $result = $interface->executePreparedAndGetColumnValue($cmdAndValues[0],$cmdAndValues[1],$this->keyFieldName);
+        } catch(Throwable $th){
+            return false;
+        }
+
         if($this->isNewElement()){
             return $result;
         } else {
@@ -269,7 +278,11 @@ abstract class ContentModule{
         $values = array(":".$this->keyFieldName => $this->classFields[$this->keyFieldName]->getValue());
 
         $interface = new MySQLInterface($dbConnector);
-        $result = $interface->executePrepared($sql,$values);
+        try{
+            $result = $interface->executePrepared($sql,$values);
+        } catch(Throwable $th){
+            return false;
+        }
 
         if($result === false){
             return false;
