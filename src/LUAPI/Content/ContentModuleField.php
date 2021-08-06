@@ -117,7 +117,7 @@ class ContentModuleField{
         "__value__->format('Y-m-d H:i:s');",
         "DateTime::createFromFormat('Y-m-d H:i:s',__value__);",
         "__value__->format('Y-m-d H:i:s');",
-        "DateTime::createFromFormat('Y-m-d H:i:s',__value__);",
+        "new DateTime(__value__);",
         $isUpdatable,$isSelectable,$isInsertable);
     }
 
