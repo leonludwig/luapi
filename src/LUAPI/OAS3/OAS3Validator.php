@@ -109,12 +109,6 @@ abstract class OAS3Validator {
      * @param mixed $value the value to check
      */
     public function validateAgainstSchema(string $oas3Schema, mixed $value):bool{
-        //the schema we need may be included inside an object clled "schema"
-        $schemaJsonObj = json_decode($oas3Schema,true);
-        if(isset($schemaJsonObj["schema"])){
-            $oas3Schema = json_encode($schemaJsonObj["schema"]);
-        }
-
         $schema = Schema::import(json_decode($oas3Schema));
 
         try {

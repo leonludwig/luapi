@@ -202,8 +202,8 @@ class APIHandlerCodeData{
      */
     private function getRequestBodySchema(\cebe\openapi\spec\RequestBody $requestBody):string{
         $schemaObject = $requestBody->content["application/json"]->getSerializableData();
-        if(isset($schemaObject["schema"])){
-            $schemaObject = $schemaObject["schema"];
+        if(isset($schemaObject->schema)){
+            $schemaObject = $schemaObject->schema;
         }
         return json_encode($schemaObject);
     }
