@@ -65,12 +65,12 @@ class API {
         $tempUrlVars = null;
         foreach($this->handlers as $handlerPath => $handlerInfo){
             $route = new APIRoute($handlerPath);
-            $_UrlVars = $route->matchURI($uri); //returns false if no match, otherwise will be a list of the url variables
+            $isMatch = $route->matchURI($uri);
 
-            if(is_array($_UrlVars)){ //is match
-                $isMatchWithoutUrlVars = count($_UrlVars) == 0;
+            if($isMatch){ //is match
+                $isMatchWithoutUrlVars = count($route->variableValues) == 0;
                 $tempHandlerData = $handlerInfo;
-                $tempUrlVars = $_UrlVars;
+                $tempUrlVars = $route->variableValues;
                 if($isMatchWithoutUrlVars){ //we found the best possible match
                     break;
                 }

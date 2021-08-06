@@ -1,7 +1,9 @@
 <?php
 namespace LUAPI;
 
+use Exception;
 use Swaggest\JsonSchema\Schema;
+use LUAPI\Exceptions\RequestParameterNotFoundException;
 
 /**
  * this class represents a request from a client. It provides simple interfaces to access request parameters.
@@ -85,13 +87,14 @@ class Request {
     /**
      * returns the value at the given key inside the BODY OBJECT
      * @param string $key the name of the parameter
-     * @return mixed|false the parameter value or false if not found
+     * @return mixed the parameter value
+     * @throws RequestParameterNotFoundException
      */
     public function getParameter(string $key):mixed{
         if(isset($this->bodyObject[$key])){
             return $this->bodyObject[$key];
         }
-        return false;
+        throw new RequestParameterNotFoundException("key");
     }
 
     /**
@@ -106,6 +109,7 @@ class Request {
      * returns the value of the given header.
      * @param string $key the header name. The key is automatically turned to upper case and - is replaced with _. if the key doesnt start with HTTP_, the method will add this prefix to the key.
      * @return mixed the header value
+     * @throws RequestParameterNotFoundException
      */
     public function getHeader(string $key):mixed{
         $key = strtoupper($key);
@@ -114,8 +118,10 @@ class Request {
             $key = "HTTP_" . $key;
         }
 
-        if(isset($_SERVER[$key])){ return $_SERVER[$key]; }
-        return "";
+        if(isset($_SERVER[$key])){ 
+            return $_SERVER[$key]; 
+        }
+        throw new RequestParameterNotFoundException("key","header");
     }
 
     /**
@@ -125,7 +131,10 @@ class Request {
      */
     public function getCookie(string $key):mixed{
         $key = str_replace(array(" ","."),"_",$key);
-        return $_COOKIE[$key];
+        if(isset($_COOKIE[$key])){
+            return $_COOKIE[$key];
+        }
+        throw new RequestParameterNotFoundException("key","cookie");
     }
 
     /**
@@ -139,16 +148,16 @@ class Request {
 
     /**
      * checks whether the body matches the given schema
-     * implemented with https://github.com/opis/json-schema
+     * implemented with swaggest/json-schema
      * @param Schema $schema - the json schema (check http://json-schema.org/ for more information)
-     * @return true|Exception true or exception
+     * @return bool
      */
-    public function bodyMatchesSchema(Schema $schema):mixed{
+    public function bodyMatchesSchema(Schema $schema):bool{
         try {
             $obj = $schema->in(json_decode($this->getRawBody()));
             return true;
         } catch (\Throwable $th) {
-            return $th;
+            return false;
         }
     }
 }

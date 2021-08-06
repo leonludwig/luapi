@@ -3,7 +3,7 @@ namespace LUAPI;
 
 /**
  * a class that represents an API route.
- * this class contains functions to extract the variables inside API-routes & create the regex patterns.
+ * this class contains functions to extract the variableNames inside API-routes & create the regex patterns.
  */
 class APIRoute{
     /**
@@ -13,7 +13,11 @@ class APIRoute{
     /**
      * an array containing the names of the URL Variables in the Route 
      */
-    private array $variables;
+    private array $variableNames;
+    /**
+     * an array containing the values of the URL Variables in the Route 
+     */
+    private array $variableValues;
     /**
      * the regex pattern that is used to check if a given request URL matches this route.
      */
@@ -21,12 +25,12 @@ class APIRoute{
 
     /**
      * creates & initializes the route object
-     * @param string $route the api route: can contain variables noted like {varName}. Example: /api/user/{id}
+     * @param string $route the api route: can contain variableNames noted like {varName}. Example: /api/user/{id}
      */
     public function __construct(string $route)
     {
         $this->baseRoute = $this->removeTrailingSlash($route);
-        $this->variables = $this->extractVariables();
+        $this->variableNames = $this->extractVariables();
         $this->regexPattern = $this->buildRegexPattern();
     }
 
@@ -75,7 +79,7 @@ class APIRoute{
      * checks whether the given uri matches this api route
      * @param string $uri the request uri
      */
-    public function matchURI(string $uri):mixed{
+    public function matchURI(string $uri):bool{
         $uri = $this->removeQuery($this->removeTrailingSlash($uri));
         $matches = array(array(),array()); //build the default return value of an empty match
         preg_match_all($this->regexPattern,$uri,$matches);
@@ -85,14 +89,14 @@ class APIRoute{
             if($matches[0][0] != $uri){ return false; } //this can be a partly match so we return false if so
         }
         
-        $vars = array();
+        $this->variableValues = array();
         $index = 1; //starting at 1 because first match is the whole sting
-        foreach($this->variables as $varname){ 
-            //add variable name & value from the match in uri to $vars
-            $vars[$varname] = $matches[$index][0];
+        foreach($this->variableNames as $varname){ 
+            //add variable name & value from the match in uri to $this->variableValues
+            $this->variableValues[$varname] = $matches[$index][0];
             $index++;
         }
-        return $vars;
+        return true;
     }
 }
 ?>

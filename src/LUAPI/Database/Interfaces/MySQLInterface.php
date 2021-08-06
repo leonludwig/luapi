@@ -2,6 +2,7 @@
 namespace LUAPI\Database\Interfaces;
 
 use LUAPI\Database\Interfaces\SQLInterface;
+use LUAPI\Exceptions\SQLInterfaceException;
 /**
  * a class that represents an interface to a database connection.
  */
@@ -12,17 +13,16 @@ class MySQLInterface extends SQLInterface{
      * @return bool whether the table exists or not
      */
     public function tableExists(string $tableName):bool{
-        if($this->connector->pdo === false){
-            return false;
+        if($this->connector->pdo === null){
+            throw new SQLInterfaceException("pdo connector is null!");
         }
 
         try {
-            $result = $this->queryAndFetch("SELECT 1 FROM $tableName");
-            $result = true;
+            $this->queryAndFetch("SELECT 1 FROM $tableName");
+            return true;
         } catch (\Throwable $th) {
-            $result = false;
+            return false;
         }
-        return $result;
     }
 }
 ?>

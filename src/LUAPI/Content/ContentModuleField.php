@@ -6,7 +6,7 @@ use Throwable;
  * the description of a field inside a content module
  */
 class ContentModuleField{
-    public mixed $targetClass;
+    public mixed $targetObject;
     public string $classPropertyName;
     public string $dbFieldName;
     public string $jsonPath;
@@ -21,11 +21,11 @@ class ContentModuleField{
     /**
      * DO NOT USE THIS CONSTRUCTOR! USE ONE OF THE STATIC METHODS!
      */
-    public function __construct(mixed $targetClass,string $classPropertyName,string $dbFieldName,string $jsonPath,
+    public function __construct(mixed $targetObject,string $classPropertyName,string $dbFieldName,string $jsonPath,
                                 string $evalBeforeInsert,string $evalAfterGrab,string $evalBeforeInsertJSON,
                                 string $evalAfterGrabJSON,bool $isUpdatable,bool $isSelectable, bool $isInsertable)
     {
-        $this->targetClass = $targetClass;
+        $this->targetObject = $targetObject;
         $this->classPropertyName = $classPropertyName;
         $this->dbFieldName = $dbFieldName;
         $this->jsonPath = $jsonPath;
@@ -44,7 +44,7 @@ class ContentModuleField{
      * @param string $for the storage type ("db" or "json")
      */
     public function getValue(string $for = "db"):mixed{
-        $oValue = $this->targetClass->{$this->classPropertyName};
+        $oValue = $this->targetObject->{$this->classPropertyName};
 
         if($for == "db" && $this->evalBeforeInsert !== ""){
             $oValue = $this->executeEval($this->evalBeforeInsert,$oValue);
@@ -67,7 +67,7 @@ class ContentModuleField{
             $oValue = $this->executeEval($this->evalAfterGrabJSON,$oValue);
         }
 
-        $this->targetClass->{$this->classPropertyName} = $oValue;
+        $this->targetObject->{$this->classPropertyName} = $oValue;
     }
 
     /**
@@ -90,30 +90,30 @@ class ContentModuleField{
 
     /**
      * creates a field information for a field whos value does not have to be processed after loading or storing it
-     * @param mixed $targetClass the current object instance (containing the field)
-     * @param string $classPropertyName the name of the property inside $targetClass
+     * @param mixed $targetObject the current object instance (containing the field)
+     * @param string $classPropertyName the name of the property inside $targetObject
      * @param string $dbFieldName the name of the field inside the database
      * @param string $jsonPath the path to the field inside the JSON-representation of the object
      * @param bool $isUpdatable whether the value of this field can be updated inside the database
      * @param bool $isSelectable whether the value of this field can be loaded from the database
      * @param bool $isInsertable whether the value of this field can be inserted into the database
      */
-    public static function noEval(mixed $targetClass,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
-        return new ContentModuleField($targetClass,$classPropertyName,$dbFieldName,$jsonPath,"","","","",$isUpdatable,$isSelectable,$isInsertable);
+    public static function noEval(mixed $targetObject,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
+        return new ContentModuleField($targetObject,$classPropertyName,$dbFieldName,$jsonPath,"","","","",$isUpdatable,$isSelectable,$isInsertable);
     }
 
     /**
      * creates a field information for a DateTime field
-     * @param mixed $targetClass the current object instance (containing the field)
-     * @param string $classPropertyName the name of the property inside $targetClass
+     * @param mixed $targetObject the current object instance (containing the field)
+     * @param string $classPropertyName the name of the property inside $targetObject
      * @param string $dbFieldName the name of the field inside the database
      * @param string $jsonPath the path to the field inside the JSON-representation of the object
      * @param bool $isUpdatable whether the value of this field can be updated inside the database
      * @param bool $isSelectable whether the value of this field can be loaded from the database
      * @param bool $isInsertable whether the value of this field can be inserted into the database
      */
-    public static function timestamp(mixed $targetClass,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
-        return new ContentModuleField($targetClass,$classPropertyName,$dbFieldName,$jsonPath,
+    public static function timestamp(mixed $targetObject,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
+        return new ContentModuleField($targetObject,$classPropertyName,$dbFieldName,$jsonPath,
         "__value__->format('Y-m-d H:i:s');",
         "DateTime::createFromFormat('Y-m-d H:i:s',__value__);",
         "__value__->format('Y-m-d H:i:s');",
@@ -123,16 +123,16 @@ class ContentModuleField{
 
     /**
      * creates a field information for an array field
-     * @param mixed $targetClass the current object instance (containing the field)
-     * @param string $classPropertyName the name of the property inside $targetClass
+     * @param mixed $targetObject the current object instance (containing the field)
+     * @param string $classPropertyName the name of the property inside $targetObject
      * @param string $dbFieldName the name of the field inside the database
      * @param string $jsonPath the path to the field inside the JSON-representation of the object
      * @param bool $isUpdatable whether the value of this field can be updated inside the database
      * @param bool $isSelectable whether the value of this field can be loaded from the database
      * @param bool $isInsertable whether the value of this field can be inserted into the database
      */
-    public static function array(mixed $targetClass,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
-        return new ContentModuleField($targetClass,$classPropertyName,$dbFieldName,$jsonPath,
+    public static function array(mixed $targetObject,string $classPropertyName,string $dbFieldName,string $jsonPath,bool $isUpdatable,bool $isSelectable, bool $isInsertable):ContentModuleField{
+        return new ContentModuleField($targetObject,$classPropertyName,$dbFieldName,$jsonPath,
         "json_encode(__value__);",
         "json_decode(__value__);",
         "",
