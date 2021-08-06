@@ -43,7 +43,7 @@ abstract class ContentModule{
     public function generateDBSelect():array{
         $arrayKey = ":".$this->keyFieldName;
         return array(
-            "SELECT * FROM ".$this->dbTableName." WHERE ".$this->keyFieldName." = :".$this->keyFieldName, 
+            "SELECT * FROM {$this->dbTableName} WHERE {$this->keyFieldName} = :{$this->keyFieldName}", 
             array($arrayKey => $this->classFields[$this->keyFieldName]->getValue()));
     }
 
@@ -90,7 +90,7 @@ abstract class ContentModule{
      * @return array an array containing 0: the query text, 1: the values array for the prepared statement.
      */
     public function generateDBUpdate():array{
-        $sql = "UPDATE ".$this->dbTableName." SET ";
+        $sql = "UPDATE {$this->dbTableName} SET ";
 
         //create fields and placeholders section
         foreach($this->classFields as $fieldName => $field){
@@ -100,7 +100,7 @@ abstract class ContentModule{
         }
         $sql = substr($sql,0,strlen($sql)-1); // remove last comma
 
-        $sql .= " WHERE ".$this->keyFieldName." = :".$this->keyFieldName;
+        $sql .= " WHERE {$this->keyFieldName} = :{$this->keyFieldName}";
 
         //create values array
         $values = array();
@@ -121,7 +121,7 @@ abstract class ContentModule{
     public function generateDBDelete():array{
         $arrayKey = ":".$this->keyFieldName;
         return array(
-            "DELETE FROM ".$this->dbTableName." WHERE ".$this->keyFieldName." = :".$this->keyFieldName, 
+            "DELETE FROM {$this->dbTableName} WHERE {$this->keyFieldName} = :{$this->keyFieldName}", 
             array($arrayKey => $this->classFields[$this->keyFieldName]->getValue()));
     }
 
@@ -274,7 +274,7 @@ abstract class ContentModule{
      */
     public function updateSingleField(PDOConnector $dbConnector, string $fieldName):bool{
         $field = $this->classFields[$fieldName];
-        $sql = "UPDATE ".$this->dbTableName." SET ".$field->dbFieldName." = :".$field->dbFieldName." WHERE ".$this->keyFieldName." = :".$this->keyFieldName;
+        $sql = "UPDATE {$this->dbTableName} SET {$field->dbFieldName} = :{$field->dbFieldName} WHERE {$this->keyFieldName} = :{$this->keyFieldName}";
         $values = array(":".$this->keyFieldName => $this->classFields[$this->keyFieldName]->getValue());
 
         $interface = new MySQLInterface($dbConnector);

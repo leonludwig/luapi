@@ -74,7 +74,7 @@ class APIHandlerCodeData{
      */
     private function loadName():void{
         $handlerBaseName = $this->getHandlerNameForPath($this->path);
-        $this->handlerName = $handlerBaseName . "Handler";
+        $this->handlerName = "{$handlerBaseName}Handler";
     }
 
     /**
