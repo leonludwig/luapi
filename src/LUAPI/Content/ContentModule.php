@@ -231,9 +231,9 @@ abstract class ContentModule{
      * MAKE SURE THE VALUE OF THE PRIMARY KEY FIELD IS SET BEFORE CALLING THIS
      * saves the content of the object to the database
      * @param PDOConnector $dbConnector the connector to the database to save the object to
-     * @return bool whether the object was deleted successfully
+     * @return string the new key value or false
      */
-    public function saveToDatabase(PDOConnector $dbConnector):mixed{
+    public function saveToDatabase(PDOConnector $dbConnector):string{
         $cmdAndValues = array();
         if($this->isNewElement()){
             $cmdAndValues = $this->generateDBInsert();

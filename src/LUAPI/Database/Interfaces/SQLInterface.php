@@ -119,9 +119,9 @@ abstract class SQLInterface {
      * @param string $sql the SQL query
      * @param array $values the values to replace the wildcards in the query with
      * @param string $columnName the column name to get the return value from
-     * @return bool without error, the return value is the value of pdo->lastInsertId($columnName). On any error, the value will always be FALSE.
+     * @return string without error, the return value is the value of pdo->lastInsertId($columnName). On any error, the value will always be FALSE.
      */
-    public function executePreparedAndGetColumnValue(string $sql, array $values, string $columnName):mixed{
+    public function executePreparedAndGetColumnValue(string $sql, array $values, string $columnName):string{
         if($this->connector->pdo === null){
             return false;
         }

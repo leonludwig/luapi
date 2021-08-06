@@ -31,7 +31,7 @@ abstract class OAS3Validator {
      * @param bool $allowReserved CURRENTLY IGNORED | (query only) whether the parameter value SHOULD allow reserved characters, as defined by RFC3986 :/?#[]@!$&'()*+,;= to be included without percent-encoding.
      * @param string $oas3Schema the parameter schema as JSON string
      */
-    public function validateParameter(string $name, string $in, bool $required, bool $allowEmpty, bool $allowReserved, string $oas3Schema){
+    public function validateParameter(string $name, string $in, bool $required, bool $allowEmpty, bool $allowReserved, string $oas3Schema):bool{
         if($in == "path"){
             return $this->validateURLParameter($name,$oas3Schema,$required);
         }
@@ -54,6 +54,9 @@ abstract class OAS3Validator {
         }
 
         $value = $this->req->pathParameters[$name];
+        if(is_numeric($value)){
+            $value = (int) $value;
+        }
         return $this->validateAgainstSchema($oas3Schema,$value);
     }
 
@@ -66,6 +69,9 @@ abstract class OAS3Validator {
         }
 
         $value = $this->req->queryParameters[$name];
+        if(is_numeric($value)){
+            $value = (int) $value;
+        }
         return $this->validateAgainstSchema($oas3Schema,$value);
     }
 
