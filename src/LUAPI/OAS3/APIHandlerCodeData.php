@@ -176,7 +176,7 @@ class APIHandlerCodeData{
         //insert body validation info in code template
         if($methodDefinition->requestBody !== null && $methodDefinition->requestBody->required && isset($methodDefinition->requestBody->content["application/json"])){
             $validationCode .= '
-            $result = $this->validateBody('.$this->boolToString($methodDefinition->requestBody->required).','.$this->stringifyParameter(json_encode($methodDefinition->requestBody->content["application/json"]->getSerializableData())).');
+            $result = $this->validateBody('.$this->boolToString($methodDefinition->requestBody->required).','.$this->stringifyParameter($this->getRequestBodySchema($methodDefinition->requestBody)).');
             if($result == false){
                 return new OAS3ValidationResult(false,"request body does not match expected schema!");
             }
@@ -195,6 +195,17 @@ class APIHandlerCodeData{
      */
     private function stringifyParameter($value):string{
         return "'$value'";
+    }
+
+    /**
+     * returns the json schema for the given request body
+     */
+    private function getRequestBodySchema(\cebe\openapi\spec\RequestBody $requestBody):string{
+        $schemaObject = $requestBody->content["application/json"]->getSerializableData();
+        if(isset($schemaObject["schema"])){
+            $schemaObject = $schemaObject["schema"];
+        }
+        return json_encode($schemaObject);
     }
 
     /**
